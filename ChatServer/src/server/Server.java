@@ -68,6 +68,15 @@ public class Server {
             }
         }
     }
+    
+    public void mensagemDestino(String[] result) {
+        for(ClientManager cliente: clientes){
+            if(cliente.clientName.equals(result[2])){
+                String mensagem = result[1] + ":" + result[3];
+                cliente.enviarMensagem(mensagem);
+            }
+        }
+    }
 
     public static void main(String args[]) {
         try {
@@ -76,13 +85,5 @@ public class Server {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
-
-    void mensagemDestino(String[] result) {
-        for(ClientManager cliente: clientes){
-            if(cliente.clientName.equals(result[2])){
-                String mensagem = result[1] + ":" + result[3];
-                cliente.enviarMensagem(mensagem);
-            }
-        }
-    }
 }
+    
