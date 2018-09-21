@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
-import server.Server;
 
 public class Client extends javax.swing.JFrame {
 
@@ -30,11 +29,12 @@ public class Client extends javax.swing.JFrame {
     //Define um nome ao socket "clientName" e loga no servidor com esse nome
     public void ligar() {
         try {
-            clientName = txtNomeUsuario.getText().trim();
+            final String aux_nome = txtNomeUsuario.getText().trim();
+            
             txtAreaConversa.append("<-cliente->:Conectando...\n");
-            String host = txtServerIp.getText().trim();
+            
+            String host = txtServerIp.getText().trim();            
             int port = Integer.parseInt(txtServerPorta.getText().trim());
-
             client = new Socket(host, port);
             
             txtAreaConversa.append("<-cliente->:Usuario conectado...\n");
@@ -42,11 +42,13 @@ public class Client extends javax.swing.JFrame {
             leitor = new DataInputStream(client.getInputStream());
             escritor = new DataOutputStream(client.getOutputStream());
             
-            escritor.writeUTF("login:" + clientName);
-            
+            escritor.writeUTF("login:" + aux_nome);
+            Thread.sleep(100); 
+                       
             //Thread que ouve as respostas do servidor que chegam atraves do clientManager //LISTENER
             //Trata a mensagem recebida e, de acordo com o que foi enviado pelo clientManager define quais acoes realizar
             new Thread(){
+                @Override
                 public void run() {
                     try {
                         while (true) {
@@ -60,15 +62,28 @@ public class Client extends javax.swing.JFrame {
                             
                             if(msg.toLowerCase().startsWith("lista:")){   
                                 String nome = msg.substring(6, msg.length());
-                                addLista(nome);         
-                            }    
+                                if(nome != null){
+                                    addLista(nome);                                             
+                                }
+                            }  
                             
+                            if(msg.toLowerCase().equals("login:false")){
+                               System.err.println("Nome de usuario ja existe: " + msg);                               
+                               txtAreaConversa.append("<-cliente->:" + "Nome de usuario ja existe..." + "\n");    
+                               client.close();
+                            }
+                            
+                            if(msg.toLowerCase().equals("login:true")){
+                               System.err.println("Usuario logado: " + msg);
+                               clientName = aux_nome;
+                            }
+                                     
                             if(msg.toLowerCase().startsWith("sair")){
                                dispose();
                             }
                         }
                     } catch (IOException ex) {
-                        txtAreaConversa.append("<-cliente->:" + ex.getMessage());
+                        txtAreaConversa.append("<-cliente->:" + ex.getMessage() + "\n");
                     }
                 }
 
@@ -78,10 +93,15 @@ public class Client extends javax.swing.JFrame {
                         lista.add(nome);
                     }
                 }
-            }.start(); //Starta a Thread 
-
+            }.start(); //Starta a Thread             
+            
+            //Atualiza a lista de clientes
+            btnAtualizar.doClick();
+            
         } catch (IOException ex) {
-            txtAreaConversa.append("<-cliente->:" + ex.getMessage());
+            txtAreaConversa.append("<-cliente->:" + ex.getMessage() + "\n");
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -362,10 +382,11 @@ public class Client extends javax.swing.JFrame {
         if (txtServerIp.getText().trim().isEmpty()) {
             txtServerIp.setText("127.0.0.1");
         }
+        
         if (txtServerPorta.getText().trim().isEmpty()) {
             txtServerPorta.setText("9999");
         }
-
+        
         ligar();
     }//GEN-LAST:event_btnConectarActionPerformed
 
@@ -384,9 +405,7 @@ public class Client extends javax.swing.JFrame {
         try {
             escritor.writeUTF("lista_usuarios:" + "<" + clientName + ">:");
             Thread.sleep(100);
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {    
+        } catch (IOException | InterruptedException ex) {    
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -452,6 +471,7 @@ public class Client extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
+            @Override
             public void run() {
                 new Client().setVisible(true);
             }

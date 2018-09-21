@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
 
 public class Server {
 
@@ -37,6 +36,7 @@ public class Server {
             client = new ClientManager(cliente, this);
 
             clientes.add(client);
+            System.out.println(client.clientName);
         }
     }
 
@@ -74,7 +74,9 @@ public class Server {
         //Synchronized para sincronizar o acesso a lista de clientes
         synchronized (clientes) {
             for (ClientManager cliente: clientes) {
-                cliente.enviarLista(clientes);
+                if(cliente.clientName != null){
+                    cliente.enviarLista(clientes);
+                }                
             }
         }
     }
@@ -86,6 +88,19 @@ public class Server {
                 String mensagem = result[1] + ":" + result[3];
                 cliente.enviarMensagem(mensagem);
             }
+        }
+    }
+    
+    //Realiza a verificacao na lista de clientes
+    //Se o nome ja estiver cadastrado retorna false
+    public Boolean tentaLogar(String nome) {
+        synchronized (clientes) {
+            for(ClientManager cliente: clientes){
+                if(((cliente.clientName) != null) && (nome.equalsIgnoreCase(cliente.clientName.toLowerCase()))){
+                    return false;
+                }
+            }
+            return true;
         }
     }
 

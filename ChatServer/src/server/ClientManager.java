@@ -6,15 +6,12 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
 
 public class ClientManager extends Thread {
 
-    private Server servidor;
-    private Socket socket;
-    private DataOutputStream escritor;
+    private final Server servidor;
+    private final Socket socket;
+    private final DataOutputStream escritor;
     public String clientName;
     
     //Contrutor recebe o socket q ele vai administrar
@@ -58,18 +55,28 @@ public class ClientManager extends Thread {
 
                 }else if((result.length > 1) && (metodo.equals("login"))){
                     System.err.println("Entrei no clientName");
-                    this.clientName = result[1];
-
+                    
+                    String aux_nome = result[1];
+                    aux_nome = aux_nome.toLowerCase();
+                    
+                    if(servidor.tentaLogar(aux_nome)){
+                        this.clientName = result[1];
+                        escritor.writeUTF("login:true");         
+                        
+                    }else{
+                        escritor.writeUTF("login:false");
+                    }
+                    
                 }else if((result.length == 3) && (remetente.equals("*"))){
-                    System.err.println("Entrei no replicarMensagem");
+                    System.err.println("Entrei no Replicar Mensagem");
                     servidor.replicarMensagem(mensagem);
 
                 }else if((result.length > 3) && (metodo.equals("mensagem"))){
                     System.err.println("Entrei no Mensagem com Destinatario");
                     servidor.mensagemDestino(result);
 
-                    for(int i=0; i<result.length; i++){
-                        System.err.println(result[i]);
+                    for (String aux: result) {
+                        System.err.println(aux);
                     }
                     
                 }else if(mensagem.equals("sair")){
@@ -91,7 +98,6 @@ public class ClientManager extends Thread {
     }
     
     //FUNCOES UTILIZADAS PELO SERVIDOR PARA COMUNICACAO COM AS VIEWS
-    
     //Envia a mensagem
     public void enviarMensagem(String mensagem) {
         try {
@@ -105,8 +111,8 @@ public class ClientManager extends Thread {
     public void enviarLista(ArrayList<ClientManager> lista) {
         try {
             synchronized (lista) {
-                for(ClientManager cli: lista){
-                    escritor.writeUTF("lista:" + cli.clientName);
+                for(ClientManager cliente: lista){
+                    escritor.writeUTF("lista:" + cliente.clientName);
                 }
             }
         } catch (IOException ex) {
