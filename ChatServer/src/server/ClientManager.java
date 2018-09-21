@@ -19,9 +19,9 @@ public class ClientManager extends Thread {
 
     public ClientManager(Socket socket, Server servidor) throws IOException {
         this.socket = socket;
-        this.servidor = servidor;        
+        this.servidor = servidor;
         this.escritor = new DataOutputStream(socket.getOutputStream());
-        
+
         start();
     }
 
@@ -32,17 +32,21 @@ public class ClientManager extends Thread {
             while (true) {
                 String mensagem = leitor.readUTF();
                 String[] result = mensagem.split(":");
-                
+
                 String metodo = result[0];
-                String remetente = result[1];
+                String remetente = null;
                 String msg = null;
                 
+                if(result.length > 1){
+                    remetente = result[1];
+                }
+
                 if(result.length >= 3){
                     msg = result[2];
                 }
-                
-                System.err.println(metodo + ":" + remetente + ":" + msg);                
-                
+
+                System.err.println(metodo + ":" + remetente + ":" + msg);
+
                 if(metodo.equals("lista_usuarios")){
                     System.err.println("Entrei no lista_usuario");
                     servidor.listaUsuario();
@@ -54,17 +58,22 @@ public class ClientManager extends Thread {
                 }else if((result.length == 3) && (remetente.equals("*"))){
                     System.err.println("Entrei no replicarMensagem");
                     servidor.replicarMensagem(mensagem);
-                    
+
                 }else if((result.length > 3) && (metodo.equals("mensagem"))){
                     System.err.println("Entrei no Mensagem com Destinatario");
                     servidor.mensagemDestino(result);
-                    
+
                     for(int i=0; i<result.length; i++){
                         System.err.println(result[i]);
-                    } 
+                    }
+                    
+                }else if(mensagem.equals("sair")){
+                    System.err.println("Entrei no Sair");
+                    escritor.writeUTF("sair");
+                    servidor.removerCliente(this); 
                     
                 }else{
-                    System.err.println("Nao entrei em porra nenhuma");
+                    System.err.println("Nao entrei em porra nenhuma");                                       
                 }
             }
         } catch (EOFException ex) {
@@ -72,7 +81,7 @@ public class ClientManager extends Thread {
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         } finally {
-            servidor.removeConnection(socket);
+            servidor.removerCliente(this);
         }
     }
 
@@ -83,14 +92,14 @@ public class ClientManager extends Thread {
             System.out.println(ex);
         }
     }
-    
-    public void enviarLista(ArrayList<ClientManager> lista) {        
+
+    public void enviarLista(ArrayList<ClientManager> lista) {
         try {
             synchronized (lista) {
                 for(ClientManager cli: lista){
                     escritor.writeUTF("lista:" + cli.clientName);
                 }
-            }            
+            }
         } catch (IOException ex) {
             System.out.println(ex);
         }

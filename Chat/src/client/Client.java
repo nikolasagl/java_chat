@@ -46,6 +46,7 @@ public class Client extends javax.swing.JFrame {
                         while (true) {
                             String msg = leitor.readUTF();
                             String[] result = msg.split(":");
+                            System.err.println(msg);
                                                         
                             if(msg.toLowerCase().startsWith("mensagem:")){
                                 txtAreaConversa.append(result[1] + ":" + result[2] + "\n");    
@@ -54,7 +55,11 @@ public class Client extends javax.swing.JFrame {
                             if(msg.toLowerCase().startsWith("lista:")){   
                                 String nome = msg.substring(6, msg.length());
                                 addLista(nome);         
-                            }                            
+                            }    
+                            
+                            if(msg.toLowerCase().startsWith("sair")){
+                               dispose();
+                            }
                         }
                     } catch (IOException ex) {
                         txtAreaConversa.append("<-cliente->:" + ex.getMessage());
@@ -91,6 +96,7 @@ public class Client extends javax.swing.JFrame {
         btnConectar = new javax.swing.JButton();
         jlblNick = new javax.swing.JLabel();
         txtNomeUsuario = new javax.swing.JTextField();
+        btnSair = new javax.swing.JButton();
         jpMensagens = new javax.swing.JPanel();
         jscpScrollMensagens = new javax.swing.JScrollPane();
         txtAreaConversa = new javax.swing.JTextArea();
@@ -128,6 +134,13 @@ public class Client extends javax.swing.JFrame {
 
         jlblNick.setText("Nome:");
 
+        btnSair.setText("Sair");
+        btnSair.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSairActionPerformed(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout jpLigacaoLayout = new org.jdesktop.layout.GroupLayout(jpLigacao);
         jpLigacao.setLayout(jpLigacaoLayout);
         jpLigacaoLayout.setHorizontalGroup(
@@ -136,7 +149,7 @@ public class Client extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(jlblNick)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(txtNomeUsuario, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 222, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(txtNomeUsuario, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 197, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jlblEndereco)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -145,8 +158,10 @@ public class Client extends javax.swing.JFrame {
                 .add(jlblPorto)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtServerPorta, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 101, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(12, 12, 12)
-                .add(btnConectar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(btnConectar)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(btnSair, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 77, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jpLigacaoLayout.setVerticalGroup(
@@ -158,7 +173,8 @@ public class Client extends javax.swing.JFrame {
                 .add(txtServerIp, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(jlblEndereco)
                 .add(jlblNick)
-                .add(txtNomeUsuario, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(txtNomeUsuario, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(btnSair))
         );
 
         jpMensagens.setBorder(javax.swing.BorderFactory.createTitledBorder("Conversa"));
@@ -209,7 +225,8 @@ public class Client extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
+                .addContainerGap()
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnAtualizar)
                 .addContainerGap())
@@ -291,8 +308,6 @@ public class Client extends javax.swing.JFrame {
                     .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        jpMensagens.getAccessibleContext().setAccessibleName("Conversa");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -396,6 +411,14 @@ public class Client extends javax.swing.JFrame {
         txtAreaConversa.setText("");
     }//GEN-LAST:event_btnLimparActionPerformed
 
+    private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
+        try {
+            escritor.writeUTF("sair");
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnSairActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -412,6 +435,7 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JButton btnConectar;
     private javax.swing.JButton btnEnviar;
     private javax.swing.JButton btnLimpar;
+    private javax.swing.JButton btnSair;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
