@@ -1,4 +1,4 @@
-package org.pap.wiki.chatserver;
+package server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -10,10 +10,8 @@ import javax.swing.DefaultListModel;
 
 public class Server {
 
-    private ServerSocket servidor; // Servidor localhost:9999
-    
-    private ClientManager client;
-    
+    private ServerSocket servidor; // Servidor localhost:9999    
+    private ClientManager client;    
     public final ArrayList<ClientManager> clientes; //Lista que guarda os clientes
 
     public Server(int port) throws IOException {
@@ -23,11 +21,9 @@ public class Server {
 
     private void listen(int port) throws IOException {
 
-        //Cria o socket servidor
         servidor = new ServerSocket(port);
         System.out.println("Servidor iniciado em " + servidor);
 
-        //Laço que recebe as ligações dos clientes
         while (true) {
 
             Socket cliente = servidor.accept();
@@ -35,7 +31,6 @@ public class Server {
             
             client = new ClientManager(cliente, this);
             
-            //criar um novo handler para este cliente
             clientes.add(client);
         }
     }
@@ -64,8 +59,7 @@ public class Server {
         }
     }
 
-    public void removeConnection(Socket cliente) {
-    }
+    public void removeConnection(Socket cliente) {}
     
     public void listaUsuario(){
         synchronized (clientes) {

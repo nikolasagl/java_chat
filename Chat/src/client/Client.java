@@ -1,4 +1,4 @@
-package org.pap.wiki.chats;
+package client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,23 +10,16 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
-import org.pap.wiki.chatserver.Server;
+import server.Server;
 
 public class Client extends javax.swing.JFrame {
 
-    //Socket usado para a ligação
     private Socket client;
-    //Streams de leitura e escrita. A de leitura é usada para receber os dados do
-    //servidor, enviados pelos outros clientes. A de escrita para enviar os dados
-    //para o servidor.
     private DataInputStream leitor;
     private DataOutputStream escritor;
-    //apenas para que o utilizador não altere o nick a meio da conversa
     private String clientName;
-    public static final ArrayList<String> lista = new ArrayList();;
-//    private final DefaultListModel lista;
-
-    /** Creates new form ClientChat */
+    public static final ArrayList<String> lista = new ArrayList();
+    
     public Client() {
         initComponents();
     }
@@ -38,39 +31,28 @@ public class Client extends javax.swing.JFrame {
             String host = txtServerIp.getText().trim();
             int port = Integer.parseInt(txtServerPorta.getText().trim());
 
-            //criar o socket
             client = new Socket(host, port);
             
-            //como não ocorreu uma excepção temos um socket aberto
             txtAreaConversa.append("<-cliente->:Usuario conectado...\n");
 
-            //Vamos obter as streams de comunicação fornecidas pelo socket
             leitor = new DataInputStream(client.getInputStream());
             escritor = new DataOutputStream(client.getOutputStream());
             
             escritor.writeUTF("login:" + clientName);
-            //e iniciar a thread que vai estar constantemente à espera de novas
-            //mensages. Se não usassemos uma thread, não conseguiriamos receber
-            //mensagens enquanto estivessemos a escrever e toda a parte gráfica
-            //ficaria bloqueada.
+            
             new Thread(){
                 public void run() {
                     try {
                         while (true) {
                             String msg = leitor.readUTF();
-//                            txtAreaConversa.append(msg + "\n");
                             String[] result = msg.split(":");
                                                         
                             if(msg.toLowerCase().startsWith("mensagem:")){
-                                //sequencialmente, ler as mensagens uma a uma e acrescentar ao
-                                //texto que já recebemos
-                                //para o utilizador ver
                                 txtAreaConversa.append(result[1] + ":" + result[2] + "\n");    
                             }
                             
                             if(msg.toLowerCase().startsWith("lista:")){   
                                 String nome = msg.substring(6, msg.length());
-//                                txtAreaConversa.append("oi: " + nome + "\n");
                                 addLista(nome);         
                             }                            
                         }
@@ -82,7 +64,6 @@ public class Client extends javax.swing.JFrame {
                 private void addLista(String nome) {
                     if(nome != null){
                         ListModel model = (ListModel) listOnline.getModel();
-//                        model.addElement(nome);
                         lista.add(nome);
                     }
                 }
@@ -113,12 +94,13 @@ public class Client extends javax.swing.JFrame {
         jpMensagens = new javax.swing.JPanel();
         jscpScrollMensagens = new javax.swing.JScrollPane();
         txtAreaConversa = new javax.swing.JTextArea();
-        txtAreaEnviar = new javax.swing.JTextField();
-        btnEnviar = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         listOnline = new javax.swing.JList<>();
         btnAtualizar = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        txtAreaEnviar = new javax.swing.JTextField();
+        btnEnviar = new javax.swing.JButton();
         btnLimpar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -129,7 +111,7 @@ public class Client extends javax.swing.JFrame {
             }
         });
 
-        jpLigacao.setBorder(javax.swing.BorderFactory.createTitledBorder("Ligação"));
+        jpLigacao.setBorder(javax.swing.BorderFactory.createTitledBorder("Conexão"));
 
         jlblEndereco.setText("IP:");
 
@@ -155,16 +137,17 @@ public class Client extends javax.swing.JFrame {
                 .add(jlblNick)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtNomeUsuario, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 222, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jlblEndereco)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtServerIp, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 171, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jlblPorto)
-                .add(2, 2, 2)
-                .add(txtServerPorta, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 101, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnConectar))
+                .add(txtServerPorta, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 101, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(12, 12, 12)
+                .add(btnConectar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jpLigacaoLayout.setVerticalGroup(
             jpLigacaoLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -178,7 +161,7 @@ public class Client extends javax.swing.JFrame {
                 .add(txtNomeUsuario, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         );
 
-        jpMensagens.setBorder(javax.swing.BorderFactory.createTitledBorder("Mensagens"));
+        jpMensagens.setBorder(javax.swing.BorderFactory.createTitledBorder("Conversa"));
 
         txtAreaConversa.setColumns(20);
         txtAreaConversa.setRows(5);
@@ -190,28 +173,16 @@ public class Client extends javax.swing.JFrame {
             jpMensagensLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jpMensagensLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jscpScrollMensagens, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 489, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(jscpScrollMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jpMensagensLayout.setVerticalGroup(
             jpMensagensLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jpMensagensLayout.createSequentialGroup()
+                .addContainerGap()
                 .add(jscpScrollMensagens)
                 .addContainerGap())
         );
-
-        txtAreaEnviar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtAreaEnviarActionPerformed(evt);
-            }
-        });
-
-        btnEnviar.setText("Enviar");
-        btnEnviar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEnviarActionPerformed(evt);
-            }
-        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Online"));
 
@@ -231,18 +202,50 @@ public class Client extends javax.swing.JFrame {
             .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .add(btnAtualizar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(btnAtualizar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnAtualizar)
                 .addContainerGap())
         );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Mensagens"));
+
+        txtAreaEnviar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAreaEnviarActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(txtAreaEnviar)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(txtAreaEnviar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 64, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        btnEnviar.setText("Enviar");
+        btnEnviar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEnviarActionPerformed(evt);
+            }
+        });
 
         btnLimpar.setText("Limpar");
         btnLimpar.addActionListener(new java.awt.event.ActionListener() {
@@ -255,20 +258,19 @@ public class Client extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jpLigacao, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .add(layout.createSequentialGroup()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(layout.createSequentialGroup()
-                        .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(txtAreaEnviar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 503, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jpMensagens, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jpLigacao, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
-                        .add(btnEnviar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 85, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(18, 18, 18)
-                        .add(btnLimpar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                            .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(jpMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(btnEnviar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(btnLimpar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -277,27 +279,45 @@ public class Client extends javax.swing.JFrame {
                 .add(jpLigacao, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(jpMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jpMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtAreaEnviar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
-                    .add(btnEnviar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
-                    .add(btnLimpar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE))
-                .addContainerGap())
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
+                        .add(14, 14, 14)
+                        .add(btnEnviar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 44, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(btnLimpar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 40, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jpMensagens.getAccessibleContext().setAccessibleName("Conversa");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtAreaEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAreaEnviarActionPerformed
-        try {
-            //enviar a mensagem para o servidor.
-            //anexamos o nickname deste utilizador apenas para identificação
-            escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + txtAreaEnviar.getText().trim());
-            txtAreaEnviar.setText("");
-        } catch (IOException ex) {
-            txtAreaConversa.append("<-cliente->:" + ex.getMessage());
+        String mensagem = txtAreaEnviar.getText().trim();
+        String destino = null;
+
+        if (this.listOnline.getSelectedIndex() > -1) {
+            destino = (String) this.listOnline.getSelectedValue();
+            try {
+                escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
+                txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");
+                txtAreaEnviar.setText("");
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }else{
+            try {
+                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);
+                txtAreaEnviar.setText("");
+            } catch (IOException ex) {
+                txtAreaConversa.append("<-cliente->:" + ex.getMessage());
+            }
         }
     }//GEN-LAST:event_txtAreaEnviarActionPerformed
 
@@ -308,7 +328,7 @@ public class Client extends javax.swing.JFrame {
         }
 
         if (txtServerIp.getText().trim().isEmpty()) {
-            txtServerIp.setText("localhost");
+            txtServerIp.setText("127.0.0.1");
         }
         if (txtServerPorta.getText().trim().isEmpty()) {
             txtServerPorta.setText("9999");
@@ -326,32 +346,6 @@ public class Client extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_formWindowClosing
-
-    private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        String mensagem = txtAreaEnviar.getText().trim();
-        String destino = null;
-        
-        if (this.listOnline.getSelectedIndex() > -1) {
-            destino = (String) this.listOnline.getSelectedValue();
-            try {
-                escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
-                txtAreaConversa.append("<" + clientName + ">:" + mensagem + "\n");
-                txtAreaEnviar.setText("");
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        }else{
-            try {
-                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);
-                txtAreaEnviar.setText("");
-            } catch (IOException ex) {
-                txtAreaConversa.append("<-cliente->:" + ex.getMessage());
-            }
-        }
-        
-        
-    }//GEN-LAST:event_btnEnviarActionPerformed
 
     private void btnAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarActionPerformed
         lista.clear();
@@ -372,6 +366,31 @@ public class Client extends javax.swing.JFrame {
         listOnline.setModel(listModel);
        
     }//GEN-LAST:event_btnAtualizarActionPerformed
+
+    private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
+        String mensagem = txtAreaEnviar.getText().trim();
+        String destino = null;
+
+        if (this.listOnline.getSelectedIndex() > -1) {
+            destino = (String) this.listOnline.getSelectedValue();
+            try {
+                escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
+                txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");
+                txtAreaEnviar.setText("");
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }else{
+            try {
+                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);
+                txtAreaEnviar.setText("");
+            } catch (IOException ex) {
+                txtAreaConversa.append("<-cliente->:" + ex.getMessage());
+            }
+        }
+
+    }//GEN-LAST:event_btnEnviarActionPerformed
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
         txtAreaConversa.setText("");
@@ -394,6 +413,7 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JButton btnEnviar;
     private javax.swing.JButton btnLimpar;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jlblEndereco;
     private javax.swing.JLabel jlblNick;

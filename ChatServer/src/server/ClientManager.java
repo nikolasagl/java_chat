@@ -1,4 +1,4 @@
-package org.pap.wiki.chatserver;
+package server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,14 +22,12 @@ public class ClientManager extends Thread {
         this.servidor = servidor;        
         this.escritor = new DataOutputStream(socket.getOutputStream());
         
-        //somos uma thread, vamos começar...
         start();
     }
 
     @Override
     public void run() {
         try {
-            //como noutras situações, obter as streams de leitura e escrita.
             DataInputStream leitor = new DataInputStream(socket.getInputStream());
             while (true) {
                 String mensagem = leitor.readUTF();
@@ -62,14 +60,12 @@ public class ClientManager extends Thread {
                     servidor.mensagemDestino(result);
                     
                     for(int i=0; i<result.length; i++){
-                        System.err.println("SR LIDO: " + result[i]);
+                        System.err.println(result[i]);
                     } 
                     
                 }else{
                     System.err.println("Nao entrei em porra nenhuma");
                 }
-                
-                
             }
         } catch (EOFException ex) {
             //DO NOTHING
