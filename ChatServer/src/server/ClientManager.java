@@ -16,15 +16,20 @@ public class ClientManager extends Thread {
     private Socket socket;
     private DataOutputStream escritor;
     public String clientName;
-
+    
+    //Contrutor recebe o socket q ele vai administrar
+    //Recebe o servidor com quem vai se comunicar
     public ClientManager(Socket socket, Server servidor) throws IOException {
         this.socket = socket;
         this.servidor = servidor;
         this.escritor = new DataOutputStream(socket.getOutputStream());
-
+        
+        //Thread Start pq sou uma thread
         start();
     }
-
+    
+    //Ouve tudo o que eh enviado pela view atraves da variavel leitor //LISTENER
+    //Trata a mensagem e, de acordo com o que foi enviado pela view define qual funcao chamar no servidor
     @Override
     public void run() {
         try {
@@ -84,7 +89,10 @@ public class ClientManager extends Thread {
             servidor.removerCliente(this);
         }
     }
-
+    
+    //FUNCOES UTILIZADAS PELO SERVIDOR PARA COMUNICACAO COM AS VIEWS
+    
+    //Envia a mensagem
     public void enviarMensagem(String mensagem) {
         try {
             escritor.writeUTF("mensagem:" + mensagem);
@@ -92,7 +100,8 @@ public class ClientManager extends Thread {
             System.out.println(ex);
         }
     }
-
+    
+    //Envia a lista de clientes conectados
     public void enviarLista(ArrayList<ClientManager> lista) {
         try {
             synchronized (lista) {
@@ -104,7 +113,8 @@ public class ClientManager extends Thread {
             System.out.println(ex);
         }
     }
-
+    
+    //Encerra a conexao entre o socket e o servidor
     public void fechar() throws IOException {
         socket.close();
     }

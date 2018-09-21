@@ -52,8 +52,10 @@ public class Server {
         }
     }
 
-
+    //Remove o cliente da lista de clientes
+    //Chama a funcao fechar do cliente, responsavel por fechar a conexao do socket
     public void removerCliente(ClientManager cliente) {
+        //Synchronized para sincronizar o acesso a lista de clientes
         synchronized (clientes) {
             System.out.println("Terminando conexao com " + cliente);
             clientes.remove(cliente);
@@ -69,6 +71,7 @@ public class Server {
 
     //Envia a lista de clientes para cada um dos clientes
     public void listaUsuario(){
+        //Synchronized para sincronizar o acesso a lista de clientes
         synchronized (clientes) {
             for (ClientManager cliente: clientes) {
                 cliente.enviarLista(clientes);

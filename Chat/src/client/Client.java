@@ -20,10 +20,14 @@ public class Client extends javax.swing.JFrame {
     private String clientName;
     public static final ArrayList<String> lista = new ArrayList();
     
+    //Construtor inicia os componentes do JFrame
     public Client() {
         initComponents();
     }
 
+    //Funcao chamada com o click do botao conectar
+    //Cria a conexao do socket com o servidor
+    //Define um nome ao socket "clientName" e loga no servidor com esse nome
     public void ligar() {
         try {
             clientName = txtNomeUsuario.getText().trim();
@@ -40,6 +44,8 @@ public class Client extends javax.swing.JFrame {
             
             escritor.writeUTF("login:" + clientName);
             
+            //Thread que ouve as respostas do servidor que chegam atraves do clientManager //LISTENER
+            //Trata a mensagem recebida e, de acordo com o que foi enviado pelo clientManager define quais acoes realizar
             new Thread(){
                 public void run() {
                     try {
@@ -72,7 +78,7 @@ public class Client extends javax.swing.JFrame {
                         lista.add(nome);
                     }
                 }
-            }.start();
+            }.start(); //Starta a Thread 
 
         } catch (IOException ex) {
             txtAreaConversa.append("<-cliente->:" + ex.getMessage());
@@ -315,25 +321,36 @@ public class Client extends javax.swing.JFrame {
     private void txtAreaEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAreaEnviarActionPerformed
         String mensagem = txtAreaEnviar.getText().trim();
         String destino = null;
+        int[] destinos = this.listOnline.getSelectedIndices();
 
-        if (this.listOnline.getSelectedIndex() > -1) {
+        if(destinos.length > 1){            
+            for(int index: destinos){
+                destino = (String) this.listOnline.getModel().getElementAt(index);
+                try {
+                    escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
+                    txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");
+                } catch (IOException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+        }else if (this.listOnline.getSelectedIndex() > -1) {
             destino = (String) this.listOnline.getSelectedValue();
             try {
                 escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
-                txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");
-                txtAreaEnviar.setText("");
+                txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");                
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }else{
             try {
-                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);
-                txtAreaEnviar.setText("");
+                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);                
             } catch (IOException ex) {
                 txtAreaConversa.append("<-cliente->:" + ex.getMessage());
             }
         }
+        txtAreaEnviar.setText("");
     }//GEN-LAST:event_txtAreaEnviarActionPerformed
 
     private void btnConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConectarActionPerformed
@@ -385,26 +402,36 @@ public class Client extends javax.swing.JFrame {
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
         String mensagem = txtAreaEnviar.getText().trim();
         String destino = null;
+        int[] destinos = this.listOnline.getSelectedIndices();
 
-        if (this.listOnline.getSelectedIndex() > -1) {
+        if(destinos.length > 1){            
+            for(int index: destinos){
+                destino = (String) this.listOnline.getModel().getElementAt(index);
+                try {
+                    escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
+                    txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");
+                } catch (IOException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+        }else if (this.listOnline.getSelectedIndex() > -1) {
             destino = (String) this.listOnline.getSelectedValue();
             try {
                 escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
-                txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");
-                txtAreaEnviar.setText("");
+                txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");                
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }else{
             try {
-                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);
-                txtAreaEnviar.setText("");
+                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);                
             } catch (IOException ex) {
                 txtAreaConversa.append("<-cliente->:" + ex.getMessage());
             }
         }
-
+        txtAreaEnviar.setText("");
     }//GEN-LAST:event_btnEnviarActionPerformed
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
