@@ -34,8 +34,8 @@ public class Server {
             System.out.println("Ligação aceita de " + cliente);
 
             client = new ClientManager(cliente, this);
-
             clientes.add(client);
+            
             System.out.println(client.clientName);
         }
     }
@@ -46,8 +46,8 @@ public class Server {
 
         //Synchronized para sincronizar o acesso a lista de clientes
         synchronized (clientes) {
-            for (ClientManager cl : clientes) {
-                cl.enviarMensagem(result[0] + ":" + result[2]);
+            for (ClientManager cliente : clientes) {
+                cliente.enviarMensagem("transmitir:" + "*:" + result[2]);
             }
         }
     }
@@ -71,43 +71,50 @@ public class Server {
 
     //Envia a lista de clientes para cada um dos clientes
     public void listaUsuario(){
+        String lista = "lista_usuarios:";
+        for (ClientManager cliente: clientes) {
+            if(cliente.clientName != null){
+                lista += cliente.clientName + ";";
+            }                
+        }
+        
         //Synchronized para sincronizar o acesso a lista de clientes
         synchronized (clientes) {
             for (ClientManager cliente: clientes) {
                 if(cliente.clientName != null){
-                    cliente.enviarLista(clientes);
+                    cliente.enviarMensagem(lista);
                 }                
             }
         }
     }
 
     //Encontra o destino na lista de clientes e encaminha a ele a mensagem
-    public void mensagemDestino(String[] result) {
+    public void mensagemDestino(String[] result, String remetente) {     
         for(ClientManager cliente: clientes){
-            if(cliente.clientName.equals(result[2])){
-                String mensagem = result[1] + ":" + result[3];
-                cliente.enviarMensagem(mensagem);
+            if(cliente.clientName.equals(result[1])){
+                String mensagem = result[1] + ":" + result[2];
+                cliente.enviarMensagem("transmitir:" + remetente + ":" + result[1] + ":" + result[2]);
             }
         }
     }
     
     //Realiza a verificacao na lista de clientes
     //Se o nome ja estiver cadastrado retorna false
-    public Boolean tentaLogar(String nome) {
+    public String tentaLogar(String nome) {
         synchronized (clientes) {
             for(ClientManager cliente: clientes){
                 if(((cliente.clientName) != null) && (nome.equalsIgnoreCase(cliente.clientName.toLowerCase()))){
-                    return false;
+                    return "login:false";
                 }
             }
-            return true;
+            return "login:true";
         }
     }
 
     //Main
     public static void main(String args[]) {
         try {
-            new Server(9999);
+            new Server(6666);
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }

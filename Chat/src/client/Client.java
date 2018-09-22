@@ -55,25 +55,33 @@ public class Client extends javax.swing.JFrame {
                             String msg = leitor.readUTF();
                             String[] result = msg.split(":");
                             System.err.println(msg);
-                                                        
-                            if(msg.toLowerCase().startsWith("mensagem:")){
-                                txtAreaConversa.append(result[1] + ":" + result[2] + "\n");    
-                            }
                             
-                            if(msg.toLowerCase().startsWith("lista:")){   
-                                String nome = msg.substring(6, msg.length());
-                                if(nome != null){
-                                    addLista(nome);                                             
-                                }
+                            System.out.println(result.toString());                      
+                            
+                            if(msg.toLowerCase().startsWith("transmitir:")){
+                                String mensagem = msg.substring(11, msg.length()); 
+                                System.out.println(mensagem);  
+                                txtAreaConversa.append(mensagem + "\n");    
+                            }
+                                                        
+                            if(msg.toLowerCase().startsWith("lista_usuarios:")){
+                                String[] lista = msg.split(":");
+                                
+                                String[] nomes = lista[1].split(";");
+                                for(String nome: nomes){
+                                    if(nome != null){
+                                        addLista(nome);                                             
+                                    }
+                                }                                
                             }  
                             
-                            if(msg.toLowerCase().equals("login:false")){
+                            if(msg.toLowerCase().equals("false")){
                                System.err.println("Nome de usuario ja existe: " + msg);                               
                                txtAreaConversa.append("<-cliente->:" + "Nome de usuario ja existe..." + "\n");    
                                client.close();
                             }
                             
-                            if(msg.toLowerCase().equals("login:true")){
+                            if(msg.toLowerCase().equals("true")){
                                System.err.println("Usuario logado: " + msg);
                                clientName = aux_nome;
                             }
@@ -339,7 +347,7 @@ public class Client extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtAreaEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAreaEnviarActionPerformed
-        String mensagem = txtAreaEnviar.getText().trim();
+        String texto_mensagem = txtAreaEnviar.getText().trim();
         String destino = null;
         int[] destinos = this.listOnline.getSelectedIndices();
 
@@ -347,8 +355,8 @@ public class Client extends javax.swing.JFrame {
             for(int index: destinos){
                 destino = (String) this.listOnline.getModel().getElementAt(index);
                 try {
-                    escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
-                    txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");
+                    escritor.writeUTF("mensagem:" + destino + ":" + texto_mensagem);
+                    txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");
                 } catch (IOException ex) {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -357,15 +365,15 @@ public class Client extends javax.swing.JFrame {
         }else if (this.listOnline.getSelectedIndex() > -1) {
             destino = (String) this.listOnline.getSelectedValue();
             try {
-                escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
-                txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");                
+                escritor.writeUTF("mensagem:" + destino + ":" + texto_mensagem);
+                txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");                
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }else{
             try {
-                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);                
+                escritor.writeUTF(clientName + ":" + "*:" + texto_mensagem);                    
             } catch (IOException ex) {
                 txtAreaConversa.append("<-cliente->:" + ex.getMessage());
             }
@@ -384,7 +392,7 @@ public class Client extends javax.swing.JFrame {
         }
         
         if (txtServerPorta.getText().trim().isEmpty()) {
-            txtServerPorta.setText("9999");
+            txtServerPorta.setText("6666");
         }
         
         ligar();
@@ -419,7 +427,7 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAtualizarActionPerformed
 
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        String mensagem = txtAreaEnviar.getText().trim();
+        String texto_mensagem = txtAreaEnviar.getText().trim();
         String destino = null;
         int[] destinos = this.listOnline.getSelectedIndices();
 
@@ -427,8 +435,8 @@ public class Client extends javax.swing.JFrame {
             for(int index: destinos){
                 destino = (String) this.listOnline.getModel().getElementAt(index);
                 try {
-                    escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
-                    txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");
+                    escritor.writeUTF("mensagem:" +  destino + ":" + texto_mensagem);
+                    txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");
                 } catch (IOException ex) {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -437,15 +445,15 @@ public class Client extends javax.swing.JFrame {
         }else if (this.listOnline.getSelectedIndex() > -1) {
             destino = (String) this.listOnline.getSelectedValue();
             try {
-                escritor.writeUTF("mensagem:" + "<" + clientName + ">:" + destino + ":" + mensagem);
-                txtAreaConversa.append("<" + clientName + ">:" + "<" + destino + ">:" + mensagem + "\n");                
+                escritor.writeUTF("mensagem:" + destino + ":" + texto_mensagem);
+                txtAreaConversa.append(destino + ":" + texto_mensagem + "\n");              
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }else{
             try {
-                escritor.writeUTF("<" + clientName + ">:" + "*:" + mensagem);                
+                escritor.writeUTF("mensagem:" + "*:" + texto_mensagem);                
             } catch (IOException ex) {
                 txtAreaConversa.append("<-cliente->:" + ex.getMessage());
             }

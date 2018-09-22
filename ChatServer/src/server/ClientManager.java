@@ -36,20 +36,25 @@ public class ClientManager extends Thread {
                 String[] result = mensagem.split(":");
 
                 String metodo = result[0];
-                String remetente = null;
+                String destinatario = null;
                 String msg = null;
                 
                 if(result.length > 1){
-                    remetente = result[1];
+                    destinatario = result[1];
                 }
 
-                if(result.length >= 3){
+                if(result.length > 2){
                     msg = result[2];
                 }
 
-                System.err.println(metodo + ":" + remetente + ":" + msg);
-
-                if(metodo.equals("lista_usuarios")){
+                System.err.println(metodo + ":" + destinatario + ":" + msg);
+                
+                if(mensagem.equals("sair")){
+                    System.err.println("Entrei no Sair");
+                    escritor.writeUTF("sair");
+                    servidor.removerCliente(this); 
+                    
+                }else if(metodo.equals("lista_usuarios")){
                     System.err.println("Entrei no lista_usuario");
                     servidor.listaUsuario();
 
@@ -59,30 +64,27 @@ public class ClientManager extends Thread {
                     String aux_nome = result[1];
                     aux_nome = aux_nome.toLowerCase();
                     
-                    if(servidor.tentaLogar(aux_nome)){
+                    String resp = servidor.tentaLogar(aux_nome);
+                    String[] teste = resp.split(":");
+                    if(teste[1].equals("true")){
                         this.clientName = result[1];
-                        escritor.writeUTF("login:true");         
+                        escritor.writeUTF("true");
                         
                     }else{
-                        escritor.writeUTF("login:false");
+                        escritor.writeUTF("false");
                     }
                     
-                }else if((result.length == 3) && (remetente.equals("*"))){
+                }else if(destinatario.equals("*")){
                     System.err.println("Entrei no Replicar Mensagem");
                     servidor.replicarMensagem(mensagem);
 
-                }else if((result.length > 3) && (metodo.equals("mensagem"))){
+                }else if((result.length >= 3) && (metodo.equals("mensagem"))){
                     System.err.println("Entrei no Mensagem com Destinatario");
-                    servidor.mensagemDestino(result);
+                    servidor.mensagemDestino(result, clientName);
 
                     for (String aux: result) {
                         System.err.println(aux);
                     }
-                    
-                }else if(mensagem.equals("sair")){
-                    System.err.println("Entrei no Sair");
-                    escritor.writeUTF("sair");
-                    servidor.removerCliente(this); 
                     
                 }else{
                     System.err.println("Nao entrei em porra nenhuma");                                       
@@ -101,20 +103,7 @@ public class ClientManager extends Thread {
     //Envia a mensagem
     public void enviarMensagem(String mensagem) {
         try {
-            escritor.writeUTF("mensagem:" + mensagem);
-        } catch (IOException ex) {
-            System.out.println(ex);
-        }
-    }
-    
-    //Envia a lista de clientes conectados
-    public void enviarLista(ArrayList<ClientManager> lista) {
-        try {
-            synchronized (lista) {
-                for(ClientManager cliente: lista){
-                    escritor.writeUTF("lista:" + cliente.clientName);
-                }
-            }
+            escritor.writeUTF(mensagem);
         } catch (IOException ex) {
             System.out.println(ex);
         }
