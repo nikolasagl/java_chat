@@ -1,17 +1,17 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class ClientManager extends Thread {
 
     private final Server servidor;
     private final Socket socket;
-    private final DataOutputStream escritor;
+    private final PrintStream escritor;
     public String clientName;
     
     //Contrutor recebe o socket q ele vai administrar
@@ -19,7 +19,7 @@ public class ClientManager extends Thread {
     public ClientManager(Socket socket, Server servidor) throws IOException {
         this.socket = socket;
         this.servidor = servidor;
-        this.escritor = new DataOutputStream(socket.getOutputStream());
+        this.escritor = new PrintStream(socket.getOutputStream());
         
         //Thread Start pq sou uma thread
         start();
@@ -30,9 +30,9 @@ public class ClientManager extends Thread {
     @Override
     public void run() {
         try {
-            DataInputStream leitor = new DataInputStream(socket.getInputStream());
-            while (true) {
-                String mensagem = leitor.readUTF();
+            Scanner leitor = new Scanner(socket.getInputStream());
+            while (leitor.hasNextLine()) {
+                String mensagem = leitor.nextLine();
                 String[] result = mensagem.split(":");
 
                 String metodo = result[0];
@@ -51,12 +51,12 @@ public class ClientManager extends Thread {
                 
                 if(mensagem.equals("sair")){
                     System.err.println("Entrei no Sair");
-                    escritor.writeUTF("sair");
+                    escritor.println("sair");
                     servidor.removerCliente(this); 
                     
-                }else if(metodo.equals("lista_usuarios")){
-                    System.err.println("Entrei no lista_usuario");
-                    servidor.listaUsuario();
+//                }else if(metodo.equals("lista_usuarios")){
+//                    System.err.println("Entrei no lista_usuario");
+//                    servidor.listaUsuario();
 
                 }else if((result.length > 1) && (metodo.equals("login"))){
                     System.err.println("Entrei no clientName");
@@ -68,10 +68,10 @@ public class ClientManager extends Thread {
                     String[] teste = resp.split(":");
                     if(teste[1].equals("true")){
                         this.clientName = result[1];
-                        escritor.writeUTF("true");
+                        escritor.println("true");
                         
                     }else{
-                        escritor.writeUTF("false");
+                        escritor.println("false");
                     }
                     
                 }else if(destinatario.equals("*")){
@@ -102,11 +102,7 @@ public class ClientManager extends Thread {
     //FUNCOES UTILIZADAS PELO SERVIDOR PARA COMUNICACAO COM AS VIEWS
     //Envia a mensagem
     public void enviarMensagem(String mensagem) {
-        try {
-            escritor.writeUTF(mensagem);
-        } catch (IOException ex) {
-            System.out.println(ex);
-        }
+        escritor.println(mensagem);
     }
     
     //Encerra a conexao entre o socket e o servidor

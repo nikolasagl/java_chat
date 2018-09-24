@@ -1,10 +1,10 @@
 package client;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -14,8 +14,8 @@ import javax.swing.ListModel;
 public class Client extends javax.swing.JFrame {
 
     private Socket client;
-    private DataInputStream leitor;
-    private DataOutputStream escritor;
+    private Scanner leitor;
+    private PrintStream escritor;
     private String clientName;
     public static final ArrayList<String> lista = new ArrayList();
     
@@ -39,10 +39,10 @@ public class Client extends javax.swing.JFrame {
             
             txtAreaConversa.append("<-cliente->:Usuario conectado...\n");
 
-            leitor = new DataInputStream(client.getInputStream());
-            escritor = new DataOutputStream(client.getOutputStream());
+            leitor = new Scanner(client.getInputStream());
+            escritor = new PrintStream(client.getOutputStream());
             
-            escritor.writeUTF("login:" + aux_nome);
+            escritor.println("login:" + aux_nome);
             Thread.sleep(100); 
                        
             //Thread que ouve as respostas do servidor que chegam atraves do clientManager //LISTENER
@@ -51,8 +51,8 @@ public class Client extends javax.swing.JFrame {
                 @Override
                 public void run() {
                     try {
-                        while (true) {
-                            String msg = leitor.readUTF();
+                        while (leitor.hasNextLine()) {
+                            String msg = leitor.nextLine();
                             String[] result = msg.split(":");
                             System.err.println(msg);
                             
@@ -65,14 +65,17 @@ public class Client extends javax.swing.JFrame {
                             }
                                                         
                             if(msg.toLowerCase().startsWith("lista_usuarios:")){
-                                String[] lista = msg.split(":");
+                                String[] aux = msg.split(":");
                                 
-                                String[] nomes = lista[1].split(";");
+                                String[] nomes = aux[1].split(";");
                                 for(String nome: nomes){
                                     if(nome != null){
                                         addLista(nome);                                             
                                     }
-                                }                                
+                                } 
+                                //Atualiza a lista de clientes
+                                btnAtualizar.doClick();
+                                lista.clear();
                             }  
                             
                             if(msg.toLowerCase().equals("false")){
@@ -102,9 +105,6 @@ public class Client extends javax.swing.JFrame {
                     }
                 }
             }.start(); //Starta a Thread             
-            
-            //Atualiza a lista de clientes
-            btnAtualizar.doClick();
             
         } catch (IOException ex) {
             txtAreaConversa.append("<-cliente->:" + ex.getMessage() + "\n");
@@ -354,29 +354,18 @@ public class Client extends javax.swing.JFrame {
         if(destinos.length > 1){            
             for(int index: destinos){
                 destino = (String) this.listOnline.getModel().getElementAt(index);
-                try {
-                    escritor.writeUTF("mensagem:" + destino + ":" + texto_mensagem);
-                    txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");
-                } catch (IOException ex) {
-                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                escritor.println("mensagem:" +  destino + ":" + texto_mensagem);
+                txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");
             }
             
         }else if (this.listOnline.getSelectedIndex() > -1) {
             destino = (String) this.listOnline.getSelectedValue();
-            try {
-                escritor.writeUTF("mensagem:" + destino + ":" + texto_mensagem);
-                txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");                
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            escritor.println("mensagem:" + destino + ":" + texto_mensagem);
+            txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");
 
         }else{
-            try {
-                escritor.writeUTF(clientName + ":" + "*:" + texto_mensagem);                    
-            } catch (IOException ex) {
-                txtAreaConversa.append("<-cliente->:" + ex.getMessage());
-            }
+            escritor.println("mensagem:" + "*:" + texto_mensagem);
+            txtAreaConversa.append("Todos:" + texto_mensagem + "\n");
         }
         txtAreaEnviar.setText("");
     }//GEN-LAST:event_txtAreaEnviarActionPerformed
@@ -409,21 +398,12 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void btnAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarActionPerformed
-        lista.clear();
-        try {
-            escritor.writeUTF("lista_usuarios:" + "<" + clientName + ">:");
-            Thread.sleep(100);
-        } catch (IOException | InterruptedException ex) {    
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         DefaultListModel listModel = new DefaultListModel();
         for (int i = 0; i < lista.size(); i++)
         {
             listModel.addElement(lista.get(i));
         }
-        listOnline.setModel(listModel);
-       
+        listOnline.setModel(listModel);       
     }//GEN-LAST:event_btnAtualizarActionPerformed
 
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
@@ -431,32 +411,24 @@ public class Client extends javax.swing.JFrame {
         String destino = null;
         int[] destinos = this.listOnline.getSelectedIndices();
 
-        if(destinos.length > 1){            
+        if(destinos.length > 1){       
+            txtAreaConversa.append("Entrei varios destinatario");
             for(int index: destinos){
                 destino = (String) this.listOnline.getModel().getElementAt(index);
-                try {
-                    escritor.writeUTF("mensagem:" +  destino + ":" + texto_mensagem);
-                    txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");
-                } catch (IOException ex) {
-                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                escritor.println("mensagem:" +  destino + ":" + texto_mensagem);
+                txtAreaConversa.append(this.clientName + ":" + destino + ":" + texto_mensagem + "\n");
             }
             
         }else if (this.listOnline.getSelectedIndex() > -1) {
+            txtAreaConversa.append("Entrei um destinatario");
             destino = (String) this.listOnline.getSelectedValue();
-            try {
-                escritor.writeUTF("mensagem:" + destino + ":" + texto_mensagem);
-                txtAreaConversa.append(destino + ":" + texto_mensagem + "\n");              
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            escritor.println("mensagem:" + destino + ":" + texto_mensagem);
+            txtAreaConversa.append(this.clientName + ":" + destino + ":" + texto_mensagem + "\n");
 
         }else{
-            try {
-                escritor.writeUTF("mensagem:" + "*:" + texto_mensagem);                
-            } catch (IOException ex) {
-                txtAreaConversa.append("<-cliente->:" + ex.getMessage());
-            }
+            txtAreaConversa.append("Entrei todos");
+            escritor.println("mensagem:" + "*:" + texto_mensagem);
+            txtAreaConversa.append("Todos:" + texto_mensagem + "\n");
         }
         txtAreaEnviar.setText("");
     }//GEN-LAST:event_btnEnviarActionPerformed
@@ -466,11 +438,7 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimparActionPerformed
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        try {
-            escritor.writeUTF("sair");
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        escritor.println("sair");
     }//GEN-LAST:event_btnSairActionPerformed
 
     /**
