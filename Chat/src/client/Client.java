@@ -57,12 +57,15 @@ public class Client extends javax.swing.JFrame {
                             String[] result = msg.split(":");
                             System.err.println(msg);
                             
-                            System.out.println(result.toString());                      
-                            
                             if(msg.toLowerCase().startsWith("transmitir:")){
                                 String mensagem = msg.substring(11, msg.length()); 
                                 System.out.println(mensagem);  
-                                txtAreaConversa.append(mensagem + "\n");    
+                                if (result[1].equals("*")){
+                                    String aux = msg.substring(13, msg.length());
+                                    txtAreaConversa.append("Todos:" + aux + "\n");
+                                }else{
+                                    txtAreaConversa.append(mensagem + "\n");    
+                                }                                
                             }
                                                         
                             if(msg.toLowerCase().startsWith("lista_usuarios:")){
@@ -79,19 +82,15 @@ public class Client extends javax.swing.JFrame {
                                 lista.clear();
                             }  
                             
-                            if(msg.toLowerCase().equals("false")){
+                            if(msg.toLowerCase().equals("login:false")){
                                System.err.println("Nome de usuario ja existe: " + msg);                               
                                txtAreaConversa.append("<-cliente->:" + "Nome de usuario ja existe..." + "\n");    
                                client.close();
                             }
                             
-                            if(msg.toLowerCase().equals("true")){
+                            if(msg.toLowerCase().equals("login:true")){
                                System.err.println("Usuario logado: " + msg);
                                clientName = aux_nome;
-                            }
-                                     
-                            if(msg.toLowerCase().startsWith("sair")){
-                               dispose();
                             }
                         }
                     } catch (IOException ex) {
@@ -349,27 +348,7 @@ public class Client extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtAreaEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAreaEnviarActionPerformed
-        String texto_mensagem = txtAreaEnviar.getText().trim();
-        String destino = null;
-        int[] destinos = this.listOnline.getSelectedIndices();
-
-        if(destinos.length > 1){            
-            for(int index: destinos){
-                destino = (String) this.listOnline.getModel().getElementAt(index);
-                escritor.println("mensagem:" +  destino + ":" + texto_mensagem);
-                txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");
-            }
-            
-        }else if (this.listOnline.getSelectedIndex() > -1) {
-            destino = (String) this.listOnline.getSelectedValue();
-            escritor.println("mensagem:" + destino + ":" + texto_mensagem);
-            txtAreaConversa.append(clientName + ":" + destino + ":" + texto_mensagem + "\n");
-
-        }else{
-            escritor.println("mensagem:" + "*:" + texto_mensagem);
-            txtAreaConversa.append("Todos:" + texto_mensagem + "\n");
-        }
-        txtAreaEnviar.setText("");
+        btnEnviar.doClick();
     }//GEN-LAST:event_txtAreaEnviarActionPerformed
 
     private void btnConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConectarActionPerformed
@@ -414,23 +393,20 @@ public class Client extends javax.swing.JFrame {
         int[] destinos = this.listOnline.getSelectedIndices();
 
         if(destinos.length > 1){       
-            txtAreaConversa.append("Entrei varios destinatario");
             for(int index: destinos){
                 destino = (String) this.listOnline.getModel().getElementAt(index);
                 escritor.println("mensagem:" +  destino + ":" + texto_mensagem);
-                txtAreaConversa.append(this.clientName + ":" + destino + ":" + texto_mensagem + "\n");
+                txtAreaConversa.append("Para:" + destino + ":" + texto_mensagem + "\n");
             }
             
         }else if (this.listOnline.getSelectedIndex() > -1) {
-            txtAreaConversa.append("Entrei um destinatario");
             destino = (String) this.listOnline.getSelectedValue();
             escritor.println("mensagem:" + destino + ":" + texto_mensagem);
-            txtAreaConversa.append(this.clientName + ":" + destino + ":" + texto_mensagem + "\n");
+            txtAreaConversa.append("Para:" + destino + ":" + texto_mensagem + "\n");
 
         }else{
-            txtAreaConversa.append("Entrei todos");
             escritor.println("mensagem:" + "*:" + texto_mensagem);
-            txtAreaConversa.append("Todos:" + texto_mensagem + "\n");
+//            txtAreaConversa.append("Todos:" + texto_mensagem + "\n");
         }
         txtAreaEnviar.setText("");
     }//GEN-LAST:event_btnEnviarActionPerformed
@@ -441,6 +417,12 @@ public class Client extends javax.swing.JFrame {
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         escritor.println("sair");
+        try {
+            client.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        dispose();
     }//GEN-LAST:event_btnSairActionPerformed
 
     

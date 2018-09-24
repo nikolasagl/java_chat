@@ -47,38 +47,30 @@ public class ClientManager extends Thread {
                     msg = result[2];
                 }
 
-                System.err.println(metodo + ":" + destinatario + ":" + msg);
+                System.err.println("Mensagem recebida pelo servidor: " + mensagem);
                 
                 if(mensagem.equals("sair")){
                     System.err.println("Entrei no Sair");
-                    escritor.println("sair");
                     servidor.removerCliente(this); 
                     
-//                }else if(metodo.equals("lista_usuarios")){
-//                    System.err.println("Entrei no lista_usuario");
-//                    servidor.listaUsuario();
-
-                }else if((result.length > 1) && (metodo.equals("login"))){
-                    System.err.println("Entrei no clientName");
-                    
-                    String aux_nome = result[1];
-                    aux_nome = aux_nome.toLowerCase();
-                    
-                    String resp = servidor.tentaLogar(aux_nome);
-                    String[] teste = resp.split(":");
-                    if(teste[1].equals("true")){
-                        this.clientName = result[1];
-                        escritor.println("true");
+                }else if(metodo.equals("login")){
+                    System.err.println("Entrei no login");                    
+                                       
+                    String resp = servidor.tentaLogar(destinatario.toLowerCase());
+                    if(resp.equals("login:true")){
+                        this.clientName = destinatario;
+                        servidor.listaUsuario();
+                        escritor.println("login:true");
                         
                     }else{
-                        escritor.println("false");
+                        escritor.println("login:false");
                     }
                     
                 }else if(destinatario.equals("*")){
                     System.err.println("Entrei no Replicar Mensagem");
                     servidor.replicarMensagem(mensagem);
 
-                }else if((result.length >= 3) && (metodo.equals("mensagem"))){
+                }else if(metodo.equals("mensagem")){
                     System.err.println("Entrei no Mensagem com Destinatario");
                     servidor.mensagemDestino(result, clientName);
 
@@ -103,10 +95,5 @@ public class ClientManager extends Thread {
     //Envia a mensagem
     public void enviarMensagem(String mensagem) {
         escritor.println(mensagem);
-    }
-    
-    //Encerra a conexao entre o socket e o servidor
-    public void fechar() throws IOException {
-        socket.close();
     }
 }
