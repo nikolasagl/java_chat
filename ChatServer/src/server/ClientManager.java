@@ -36,16 +36,8 @@ public class ClientManager extends Thread {
                 String[] result = mensagem.split(":");
 
                 String metodo = result[0];
-                String destinatario = null;
-                String msg = null;
-                
-                if(result.length > 1){
-                    destinatario = result[1];
-                }
-
-                if(result.length > 2){
-                    msg = result[2];
-                }
+                String destinatario = (result.length > 1) ? destinatario = result[1] : null;
+                String msg = (result.length > 2) ? msg = result[2] : null;
 
                 System.err.println("Mensagem recebida pelo servidor: " + mensagem);
                 
@@ -68,15 +60,13 @@ public class ClientManager extends Thread {
                     
                 }else if(destinatario.equals("*")){
                     System.err.println("Entrei no Replicar Mensagem");
-                    servidor.replicarMensagem(mensagem);
+                    servidor.replicarMensagem(mensagem, clientName);
 
-                }else if(metodo.equals("mensagem")){
+                }else if((metodo.equals("mensagem")) && !(destinatario.equals("*"))){
+                    String[] teste = mensagem.split(":");
+                    String[] destinos = teste[1].split(";");
                     System.err.println("Entrei no Mensagem com Destinatario");
-                    servidor.mensagemDestino(result, clientName);
-
-                    for (String aux: result) {
-                        System.err.println(aux);
-                    }
+                    servidor.mensagemDestino(mensagem, destinos, clientName);
                     
                 }else{
                     System.err.println("Nao entrei em porra nenhuma");                                       

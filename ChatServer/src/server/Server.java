@@ -58,23 +58,28 @@ public class Server{
     }
 
     //Replica a mensagem recebida para todos os clientes da lista
-    public void replicarMensagem(String mensagem){
+    public void replicarMensagem(String mensagem, String remetente){
         String[] result = mensagem.split(":");
 
         //Synchronized para sincronizar o acesso a lista de clientes
         synchronized (clientes){
             for (ClientManager cliente : clientes) {
-                cliente.enviarMensagem("transmitir:" + "*:" + result[2]);
+                if(!(cliente.clientName.equals(remetente))){
+                    cliente.enviarMensagem("transmitir:" + "*:" + result[2]);
+                }                    
             }
         }
     }
 
     //Encontra o destino na lista de clientes e encaminha a ele a mensagem
-    public void mensagemDestino(String[] result, String remetente){     
+    public void mensagemDestino(String msg, String[] destinos, String remetente){  
+        String mensagem = msg.substring(9, msg.length()); 
+        
         for(ClientManager cliente: clientes){
-            if(cliente.clientName.equals(result[1])){
-                String mensagem = result[1] + ":" + result[2];
-                cliente.enviarMensagem("transmitir:" + remetente + ":" + result[1] + ":" + result[2]);
+            for(String destino: destinos){
+                if(cliente.clientName.equals(destino)){
+                    cliente.enviarMensagem("transmitir:" + remetente + ":" + mensagem);
+                }
             }
         }
     }
@@ -97,7 +102,7 @@ public class Server{
     public void removerCliente(ClientManager cliente){
         //Synchronized para sincronizar o acesso a lista de clientes
         synchronized (clientes){
-            System.out.println("Terminando conexao com " + cliente);
+            System.out.println("Terminando conexao com: " + cliente);
             clientes.remove(cliente);
             System.out.println("Conexoes restantes: " + clientes.size());
             listaUsuario();
