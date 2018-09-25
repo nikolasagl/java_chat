@@ -1,16 +1,28 @@
 package client;
 
+import de.javasoft.plaf.synthetica.SyntheticaAluOxideLookAndFeel;
+import de.javasoft.plaf.synthetica.SyntheticaBlackEyeLookAndFeel;
+import de.javasoft.plaf.synthetica.SyntheticaBlackMoonLookAndFeel;
+import de.javasoft.plaf.synthetica.SyntheticaBlueLightLookAndFeel;
+import de.javasoft.plaf.synthetica.SyntheticaOrangeMetallicLookAndFeel;
+import de.javasoft.plaf.synthetica.SyntheticaStandardLookAndFeel;
+import de.javasoft.plaf.synthetica.SyntheticaWhiteVisionLookAndFeel;
+import de.javasoft.synthetica.dark.SyntheticaDarkLookAndFeel;
 import java.awt.ComponentOrientation;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
+import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
 public class Client extends javax.swing.JFrame {
@@ -450,11 +462,50 @@ public class Client extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {        
-        try {
-            UIManager.setLookAndFeel( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+    public static void main(String args[]) throws ParseException {        
+        UIManager.put("Synthetica.window.decoration", Boolean.TRUE);
+        
+        SyntheticaAluOxideLookAndFeel AluOxide = new SyntheticaAluOxideLookAndFeel();
+        SyntheticaBlackEyeLookAndFeel BlackEye = new SyntheticaBlackEyeLookAndFeel();
+        SyntheticaBlackMoonLookAndFeel BlackMoon = new SyntheticaBlackMoonLookAndFeel();
+        SyntheticaOrangeMetallicLookAndFeel OrangeMetallic = new SyntheticaOrangeMetallicLookAndFeel();
+        SyntheticaBlueLightLookAndFeel BlueLight = new SyntheticaBlueLightLookAndFeel();
+        SyntheticaWhiteVisionLookAndFeel WhiteVision = new SyntheticaWhiteVisionLookAndFeel();        
+        
+        Random rand = new Random();
+        try{
+//            switch (rand.nextInt(6)) {
+//                case 0:
+//                    UIManager.setLookAndFeel(AluOxide);
+//                    break;
+//                case 1:
+//                    UIManager.setLookAndFeel(BlackEye);
+//                    break;
+//                case 2:
+//                    UIManager.setLookAndFeel(BlackMoon);
+//                    break;
+//                case 3:
+//                    UIManager.setLookAndFeel(OrangeMetallic);
+//                    break;
+//                case 4:
+//                    UIManager.setLookAndFeel(BlueLight);
+//                    break;
+//                case 5:
+//                    UIManager.setLookAndFeel(WhiteVision);
+//                    break;
+//                
+//            }
+            UIManager.setLookAndFeel(BlueLight);
         }
-        catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
+
+        catch (Exception e){
+          e.printStackTrace();
+        }
+
+//        try {
+//            UIManager.setLookAndFeel( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+//        }
+//        catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
                 
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
