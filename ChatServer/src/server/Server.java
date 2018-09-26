@@ -65,7 +65,8 @@ public class Server{
         synchronized (clientes){
             for (ClientManager cliente : clientes) {
                 if(!(cliente.clientName.equals(remetente))){
-                    cliente.enviarMensagem("transmitir:" + "*:" + result[2]);
+//                    cliente.enviarMensagem("transmitir:" + "*:" + result[2]); Implementacao conforme protocolo
+                    cliente.enviarMensagem("transmitir:" + remetente + ":" + "*:" + result[2]); //Implementacao conforme chat da sala
                 }                    
             }
         }

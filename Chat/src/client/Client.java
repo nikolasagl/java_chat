@@ -60,9 +60,10 @@ public class Client extends javax.swing.JFrame {
                             
                             if(msg.toLowerCase().startsWith("transmitir:")){
                                 String mensagem = msg.substring(11, msg.length());   
-                                if (result[1].equals("*")){
-                                    String aux = msg.substring(13, msg.length());
-                                    txtAreaConversa.append("Todos:" + aux + "\n");
+                                if (result[2].equals("*")){ // result[1] para implementacao antiga
+//                                    String aux = msg.substring(13, msg.length());
+//                                    txtAreaConversa.append("Todos:" + aux + "\n"); Implementacao antiga
+                                    txtAreaConversa.append("De: " + result[1] + " | Para:*:" + result[3] + "\n");
                                 }else{
                                     String[] aux = mensagem.split(":");
                                     txtAreaConversa.append("De: " + aux[0] + " | Para: " + aux[1] + ": " + aux[2] + "\n");    
