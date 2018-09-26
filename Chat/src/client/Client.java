@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.DefaultCaret;
 
 public class Client extends javax.swing.JFrame {
     
@@ -33,6 +34,8 @@ public class Client extends javax.swing.JFrame {
     //Construtor inicia os componentes do JFrame
     public Client() {
         initComponents();
+        DefaultCaret caret = (DefaultCaret)txtAreaConversa.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
     
     public void playSound() throws UnsupportedAudioFileException, LineUnavailableException{
