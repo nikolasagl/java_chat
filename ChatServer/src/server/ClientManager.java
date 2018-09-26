@@ -61,10 +61,10 @@ public class ClientManager extends Thread {
                     System.err.println("Entrei no Replicar Mensagem");
                     servidor.replicarMensagem(mensagem, clientName);
 
-                }else if((metodo.equals("mensagem")) && !(destinatario.equals("*"))){
+                }else if((metodo.equals("mensagem")) && !(destinatario.equals("*")) && (msg!=null) && (msg!="")){
                     String[] teste = mensagem.split(":");
                     String[] destinos = teste[1].split(";");
-                    System.err.println("Entrei no Mensagem com Destinatario");
+                    System.err.println("Entrei no Mensagem com Destinatario: " + destinos.length);
                     servidor.mensagemDestino(mensagem, destinos, clientName);
                     
                 }else{

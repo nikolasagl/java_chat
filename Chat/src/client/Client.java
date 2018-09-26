@@ -33,7 +33,6 @@ public class Client extends javax.swing.JFrame {
     //Construtor inicia os componentes do JFrame
     public Client() {
         initComponents();
-        btnAtualizar.setVisible(false);
     }
     
     public void playSound() throws UnsupportedAudioFileException, LineUnavailableException{
@@ -47,6 +46,15 @@ public class Client extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }        
+    }
+    
+    public void btnAtualizar(){
+        DefaultListModel listModel = new DefaultListModel();
+        for (int i = 0; i < lista.size(); i++)
+        {
+            listModel.addElement(lista.get(i));
+        }
+        listaOnline.setModel(listModel);   
     }
 
     //Funcao chamada com o click do botao conectar
@@ -84,6 +92,7 @@ public class Client extends javax.swing.JFrame {
 //                                    String aux = msg.substring(13, msg.length());
 //                                    txtAreaConversa.append("Todos:" + aux + "\n"); Implementacao antiga
                                     txtAreaConversa.append("De: " + result[1] + " | Para:*:" + result[3] + "\n");
+                                    txtAreaConversa.append("\n");
                                     try {
                                         playSound();
                                     } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
@@ -91,7 +100,9 @@ public class Client extends javax.swing.JFrame {
                                     }
                                 }else{
                                     String[] aux = mensagem.split(":");
-                                    txtAreaConversa.append("De: " + aux[0] + " | Para: " + aux[1] + ": " + aux[2] + "\n");    
+                                    String aux2 = aux[1].substring(0, (aux[1].length())-1);
+                                    txtAreaConversa.append("De: " + aux[0] + " | Para: " + aux2 + ": " + aux[2] + "\n");   
+                                    txtAreaConversa.append("\n");
                                     try {
                                         playSound();
                                     } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
@@ -109,17 +120,19 @@ public class Client extends javax.swing.JFrame {
                                     }
                                 } 
                                 //Atualiza a lista de clientes
-                                btnAtualizar.doClick();
+                                btnAtualizar();
                                 lista.clear();
                                 
                             }else if(msg.toLowerCase().equals("login:false")){
                                System.err.println("Nome de usuario ja existe... " + msg);                               
-                               txtAreaConversa.append("Nome de usuario ja existe... Escolha outro!" + "\n");    
+                               txtAreaConversa.append("Nome de usuario ja existe... Escolha outro!" + "\n"); 
+                               txtAreaConversa.append("\n");
                                client.close();
                                
                             }else if(msg.toLowerCase().equals("login:true")){
                                clientName = aux_nome;
                                txtAreaConversa.append("Usuario conectado...\n");
+                               txtAreaConversa.append("\n");
                                System.err.println("Usuario conectado...");
                                txtNomeUsuario.setEditable(false);
                                txtServerIp.setEditable(false);
@@ -173,7 +186,7 @@ public class Client extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         listaOnline = new javax.swing.JList<>();
-        btnAtualizar = new javax.swing.JButton();
+        btnLimparSelecao = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         txtAreaEnviar = new javax.swing.JTextField();
         btnEnviar = new javax.swing.JButton();
@@ -286,10 +299,10 @@ public class Client extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(listaOnline);
 
-        btnAtualizar.setText("Atualizar");
-        btnAtualizar.addActionListener(new java.awt.event.ActionListener() {
+        btnLimparSelecao.setText("Limpar Selecao");
+        btnLimparSelecao.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAtualizarActionPerformed(evt);
+                btnLimparSelecaoActionPerformed(evt);
             }
         });
 
@@ -300,17 +313,18 @@ public class Client extends javax.swing.JFrame {
             .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(btnAtualizar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(btnLimparSelecao)
+                        .add(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jScrollPane1)
+                .add(btnLimparSelecao)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnAtualizar)
+                .add(jScrollPane1)
                 .addContainerGap())
         );
 
@@ -333,9 +347,9 @@ public class Client extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
+            .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(txtAreaEnviar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                .add(txtAreaEnviar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -370,17 +384,16 @@ public class Client extends javax.swing.JFrame {
                 .add(jpLigacao, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jpMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(jpMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(btnEnviar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(21, 21, 21))))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(layout.createSequentialGroup()
+                        .add(27, 27, 27)
+                        .add(btnEnviar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 43, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -417,56 +430,55 @@ public class Client extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
-    private void btnAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarActionPerformed
-        DefaultListModel listModel = new DefaultListModel();
-        for (int i = 0; i < lista.size(); i++)
-        {
-            listModel.addElement(lista.get(i));
-        }
-        listaOnline.setModel(listModel);       
-    }//GEN-LAST:event_btnAtualizarActionPerformed
-
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        String texto_mensagem = txtAreaEnviar.getText().trim();
-        String destino = null;
-        int[] destinos = this.listaOnline.getSelectedIndices();
+        if((txtAreaEnviar.getText().trim() != null) && (!txtAreaEnviar.getText().trim().isEmpty())){        
+            String texto_mensagem = txtAreaEnviar.getText().trim();        
+            String destino = null;
+            int[] destinos = this.listaOnline.getSelectedIndices();        
         
-        //Mensagem para varios destinatarios
-        if(destinos.length > 1){    
-            String mensagem = "mensagem:";
-            for (int index: destinos){
-                destino = (String) this.listaOnline.getModel().getElementAt(index);
+            //Mensagem para varios destinatarios
+            if(destinos.length > 1){    
+                String mensagem = "mensagem:";
+                for (int index: destinos){
+                    destino = (String) this.listaOnline.getModel().getElementAt(index);
+                    if(!(destino.equals(clientName))){
+                        mensagem += destino + ";";
+                    }else{
+                        txtAreaConversa.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
+                        txtAreaConversa.append("\n");
+                    }                   
+                }
+                mensagem += ": " + texto_mensagem;
+                escritor.println(mensagem);    
+                String[] result = mensagem.split(":");
+                txtAreaConversa.append("Para: " + result[1].substring(0, (result[1].length())-1) + ": " + result[2] + "\n");
+                txtAreaConversa.append("\n");
+
+            //Mensagem para um destinatario apenas
+            }else if (this.listaOnline.getSelectedIndex() > -1) {
+                destino = (String) this.listaOnline.getSelectedValue();
                 if(!(destino.equals(clientName))){
-                    mensagem += destino + ";";
+                    escritor.println("mensagem:" + destino + ":" + texto_mensagem);
+                    txtAreaConversa.append("Para: " + destino + ": " + texto_mensagem + "\n");
+                    txtAreaConversa.append("\n");
                 }else{
                     txtAreaConversa.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
-                }                   
-            }
-            mensagem += ": " + texto_mensagem;
-            escritor.println(mensagem);           
-            txtAreaConversa.append("Para: " + mensagem.substring(9, mensagem.length()) + "\n");
-            
-        //Mensagem para um destinatario apenas
-        }else if (this.listaOnline.getSelectedIndex() > -1) {
-            destino = (String) this.listaOnline.getSelectedValue();
-            if(!(destino.equals(clientName))){
-                escritor.println("mensagem:" + destino + ":" + texto_mensagem);
-                txtAreaConversa.append("Para: " + destino + ": " + texto_mensagem + "\n");
+                    txtAreaConversa.append("\n");
+                }
+
+            //Mensagem para todos
             }else{
-                txtAreaConversa.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
+                escritor.println("mensagem:" + "*: " + texto_mensagem);
+                txtAreaConversa.append("Para:*: " + texto_mensagem + "\n");
+                txtAreaConversa.append("\n");
             }
-           
-        //Mensagem para todos
-        }else{
-            escritor.println("mensagem:" + "*: " + texto_mensagem);
-            txtAreaConversa.append("Todos: " + texto_mensagem + "\n");
-        }
-        txtAreaEnviar.setText("");
-        listaOnline.clearSelection();
+            txtAreaEnviar.setText("");        
+        }        
     }//GEN-LAST:event_btnEnviarActionPerformed
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
-        txtAreaConversa.setText("");        
+        txtAreaConversa.setText("");   
+        listaOnline.clearSelection();
     }//GEN-LAST:event_btnLimparActionPerformed
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
@@ -479,9 +491,14 @@ public class Client extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_btnSairActionPerformed
 
+    private void btnLimparSelecaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparSelecaoActionPerformed
+        listaOnline.clearSelection();
+    }//GEN-LAST:event_btnLimparSelecaoActionPerformed
+
     
     /**
      * @param args the command line arguments
+     * @throws java.text.ParseException
      */
     public static void main(String args[]) throws ParseException {   
         
@@ -492,11 +509,6 @@ public class Client extends javax.swing.JFrame {
             UIManager.setLookAndFeel(BlueLight);
         }
         catch (UnsupportedLookAndFeelException e){}
-
-//        try {
-//            UIManager.setLookAndFeel( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-//        }
-//        catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
                 
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
@@ -507,10 +519,10 @@ public class Client extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAtualizar;
     private javax.swing.JButton btnConectar;
     private javax.swing.JButton btnEnviar;
     private javax.swing.JButton btnLimpar;
+    private javax.swing.JButton btnLimparSelecao;
     private javax.swing.JButton btnSair;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

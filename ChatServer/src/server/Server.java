@@ -75,11 +75,16 @@ public class Server{
     //Encontra o destino na lista de clientes e encaminha a ele a mensagem
     public void mensagemDestino(String msg, String[] destinos, String remetente){  
         String mensagem = msg.substring(9, msg.length()); 
+        String[] result = mensagem.split(":");
         
         for(ClientManager cliente: clientes){
             for(String destino: destinos){
                 if(cliente.clientName.equals(destino)){
-                    cliente.enviarMensagem("transmitir:" + remetente + ":" + mensagem);
+                    if(destinos.length == 1){
+                        cliente.enviarMensagem("transmitir:" + remetente + ":" + result[0] + " :" + result[1]);
+                    }else{
+                        cliente.enviarMensagem("transmitir:" + remetente + ":" + result[0] + ":" + result[1]);
+                    }                    
                 }
             }
         }
