@@ -1,6 +1,7 @@
 package client;
 
 import de.javasoft.plaf.synthetica.SyntheticaBlueLightLookAndFeel;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -9,6 +10,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
@@ -23,10 +29,24 @@ public class Client extends javax.swing.JFrame {
     private String clientName;
     public static final ArrayList<String> lista = new ArrayList();
     
+    
     //Construtor inicia os componentes do JFrame
     public Client() {
         initComponents();
         btnAtualizar.setVisible(false);
+    }
+    
+    public void playSound() throws UnsupportedAudioFileException, LineUnavailableException{
+        String soundName = "sound.wav";    
+        AudioInputStream audioInputStream;
+        try {
+            audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }        
     }
 
     //Funcao chamada com o click do botao conectar
@@ -64,9 +84,19 @@ public class Client extends javax.swing.JFrame {
 //                                    String aux = msg.substring(13, msg.length());
 //                                    txtAreaConversa.append("Todos:" + aux + "\n"); Implementacao antiga
                                     txtAreaConversa.append("De: " + result[1] + " | Para:*:" + result[3] + "\n");
+                                    try {
+                                        playSound();
+                                    } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
+                                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
                                 }else{
                                     String[] aux = mensagem.split(":");
                                     txtAreaConversa.append("De: " + aux[0] + " | Para: " + aux[1] + ": " + aux[2] + "\n");    
+                                    try {
+                                        playSound();
+                                    } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
+                                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
                                 }   
                                 
                             }else if(msg.toLowerCase().startsWith("lista_usuarios:")){
