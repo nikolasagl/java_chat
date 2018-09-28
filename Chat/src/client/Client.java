@@ -35,27 +35,27 @@ public class Client extends javax.swing.JFrame {
     //Construtor inicia os componentes do JFrame
     public Client() {
         initComponents();
-        DefaultCaret caret = (DefaultCaret)txtAreaConversa.getCaret();
+        DefaultCaret caret = (DefaultCaret)txtMessageArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         this.setTitle("Annoying Chat");
     }
     
-    public void tocarRisada(){
+    public void playLaugh(){
         String sound_laugh = "Risada.wav";
         AudioInputStream audioInputStream_4;
         
         try {
             audioInputStream_4 = AudioSystem.getAudioInputStream(new File(sound_laugh).getAbsoluteFile());
-            Clip risada = AudioSystem.getClip();
+            Clip laugh = AudioSystem.getClip();
             
-            risada.open(audioInputStream_4);
-            risada.start();
+            laugh.open(audioInputStream_4);
+            laugh.start();
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
     
-    public void tocarSom() throws UnsupportedAudioFileException, LineUnavailableException{
+    public void playSound() throws UnsupportedAudioFileException, LineUnavailableException{
         String sound_hey = "Hey.wav";
         String sound_heyApple = "HeyApple.wav";
         String sound_apple = "Apple.wav";
@@ -98,32 +98,32 @@ public class Client extends javax.swing.JFrame {
         }
     }
     
-    public void btnAtualizar(){
-        DefaultListModel listaModel = new DefaultListModel();
+    public void btnRefresh(){
+        DefaultListModel listModel = new DefaultListModel();
         for (int i = 0; i < list.size(); i++)
         {
-            listaModel.addElement(list.get(i));
+            listModel.addElement(list.get(i));
         }
-        listaOnline.setModel(listaModel);   
+        listOnline.setModel(listModel);   
     }
 
     //Funcao chamada com o click do botao conectar
     //Cria a conexao do socket com o servidor
     //Define um nome ao socket "clientName" e loga no servidor com esse nome
-    public void ligar() {
+    public void connect() {
         try {
-            final String aux_nome = txtNomeUsuario.getText().trim();
+            final String aux_name = txtUserName.getText().trim();
             
-            txtAreaConversa.append("Conectando...\n");
+            txtMessageArea.append("Conectando...\n");
             
             String host = txtServerIp.getText().trim();            
-            int porta = Integer.parseInt(txtServerPorta.getText().trim());
-            client = new Socket(host, porta);
+            int port = Integer.parseInt(txtServerPort.getText().trim());
+            client = new Socket(host, port);
 
             reader = new Scanner(client.getInputStream());
             writer = new PrintStream(client.getOutputStream());
             
-            writer.println("login:" + aux_nome);
+            writer.println("login:" + aux_name);
             
             //Thread que ouve as respostas do servidor que chegam atraves do clientManager //LISTENER
             //Trata a mensagem recebida e, de acordo com o que foi enviado pelo clientManager define quais acoes realizar
@@ -141,20 +141,20 @@ public class Client extends javax.swing.JFrame {
                                 if (result[2].equals("*")){ // result[1] para implementacao antiga
 //                                    String aux = msg.substring(13, msg.length());
 //                                    txtAreaConversa.append("Todos:" + aux + "\n"); Implementacao antiga
-                                    txtAreaConversa.append("De: " + result[1] + " | Para:*:" + result[3] + "\n");
-                                    txtAreaConversa.append("\n");
+                                    txtMessageArea.append("De: " + result[1] + " | Para:*:" + result[3] + "\n");
+                                    txtMessageArea.append("\n");
                                     try {
-                                        tocarSom();
+                                        playSound();
                                     } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
                                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                                     }
                                 }else{
                                     String[] aux = mensagem.split(":");
                                     String aux2 = aux[1].substring(0, (aux[1].length())-1);
-                                    txtAreaConversa.append("De: " + aux[0] + " | Para: " + aux2 + ": " + aux[2] + "\n");   
-                                    txtAreaConversa.append("\n");
+                                    txtMessageArea.append("De: " + aux[0] + " | Para: " + aux2 + ": " + aux[2] + "\n");   
+                                    txtMessageArea.append("\n");
                                     try {
-                                        tocarSom();
+                                        playSound();
                                     } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
                                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                                     }
@@ -163,52 +163,52 @@ public class Client extends javax.swing.JFrame {
                             }else if(msg.toLowerCase().startsWith("lista_usuarios:")){
                                 String[] aux = msg.split(":");
                                 
-                                String[] nomes = aux[1].split(";");
-                                for(String nome: nomes){
-                                    if(nome != null){
-                                        addLista(nome);                                             
+                                String[] names = aux[1].split(";");
+                                for(String name: names){
+                                    if(name != null){
+                                        addList(name);                                             
                                     }
                                 } 
                                 //Atualiza a lista de clientes
-                                btnAtualizar();
+                                btnRefresh();
                                 list.clear();
                                 
                             }else if(msg.toLowerCase().equals("login:false")){
                                System.err.println("Nome de usuario ja existe... " + msg);                               
-                               txtAreaConversa.append("Nome de usuario ja existe... Escolha outro!" + "\n"); 
-                               txtAreaConversa.append("\n");
+                               txtMessageArea.append("Nome de usuario ja existe... Escolha outro!" + "\n"); 
+                               txtMessageArea.append("\n");
                                client.close();
                                
                             }else if(msg.toLowerCase().equals("login:true")){
-                               tocarRisada();
-                               clientName = aux_nome;
-                               txtAreaConversa.append("Usuario conectado...\n");                               
-                               txtAreaConversa.append("\n");
+                               playLaugh();
+                               clientName = aux_name;
+                               txtMessageArea.append("Usuario conectado...\n");                               
+                               txtMessageArea.append("\n");
                                System.err.println("Usuario conectado...");
-                               txtNomeUsuario.setEditable(false);
+                               txtUserName.setEditable(false);
                                txtServerIp.setEditable(false);
-                               txtServerPorta.setEditable(false);
-                               btnConectar.setEnabled(false);
+                               txtServerPort.setEditable(false);
+                               btnConnect.setEnabled(false);
                                
                             }else{
                                System.err.println("Mensagem Invalida do Servidor");
                             }                            
                         }
                     } catch (IOException ex) {
-                        txtAreaConversa.append("<-cliente->:" + ex.getMessage() + "\n");
+                        txtMessageArea.append("<-cliente->:" + ex.getMessage() + "\n");
                     }
                 }
 
-                private void addLista(String nome) {
-                    if(nome != null){
-                        ListModel model = (ListModel) listaOnline.getModel();
-                        list.add(nome);
+                private void addList(String name) {
+                    if(name != null){
+                        ListModel model = (ListModel) listOnline.getModel();
+                        list.add(name);
                     }
                 }                
             }.start(); //Starta a Thread    
             
         } catch (IOException ex) {
-            txtAreaConversa.append("<-cliente->:" + ex.getMessage() + "\n");
+            txtMessageArea.append("<-cliente->:" + ex.getMessage() + "\n");
         }
     }
 
@@ -221,26 +221,26 @@ public class Client extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jpLigacao = new javax.swing.JPanel();
-        jlblEndereco = new javax.swing.JLabel();
+        jpConnect = new javax.swing.JPanel();
+        jlblAdress = new javax.swing.JLabel();
         txtServerIp = new javax.swing.JTextField();
-        jlblPorto = new javax.swing.JLabel();
-        txtServerPorta = new javax.swing.JFormattedTextField();
-        btnConectar = new javax.swing.JButton();
-        jlblNick = new javax.swing.JLabel();
-        txtNomeUsuario = new javax.swing.JTextField();
-        btnSair = new javax.swing.JButton();
-        jpMensagens = new javax.swing.JPanel();
+        jlblPort = new javax.swing.JLabel();
+        txtServerPort = new javax.swing.JFormattedTextField();
+        btnConnect = new javax.swing.JButton();
+        jlblName = new javax.swing.JLabel();
+        txtUserName = new javax.swing.JTextField();
+        btnLogout = new javax.swing.JButton();
+        jpMessages = new javax.swing.JPanel();
         jscpScrollMensagens = new javax.swing.JScrollPane();
-        txtAreaConversa = new javax.swing.JTextArea();
-        btnLimpar = new javax.swing.JButton();
+        txtMessageArea = new javax.swing.JTextArea();
+        btnCls = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        listaOnline = new javax.swing.JList<>();
-        btnLimparSelecao = new javax.swing.JButton();
+        listOnline = new javax.swing.JList<>();
+        btnClsSelection = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        txtAreaEnviar = new javax.swing.JTextField();
-        btnEnviar = new javax.swing.JButton();
+        txtSendArea = new javax.swing.JTextField();
+        btnSend = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
@@ -251,96 +251,96 @@ public class Client extends javax.swing.JFrame {
             }
         });
 
-        jpLigacao.setBorder(javax.swing.BorderFactory.createTitledBorder("Conexão"));
+        jpConnect.setBorder(javax.swing.BorderFactory.createTitledBorder("Conexão"));
 
-        jlblEndereco.setText("IP:");
+        jlblAdress.setText("IP:");
 
-        jlblPorto.setText("Porta:");
+        jlblPort.setText("Porta:");
 
-        txtServerPorta.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        txtServerPort.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
 
-        btnConectar.setText("Conectar");
-        btnConectar.addActionListener(new java.awt.event.ActionListener() {
+        btnConnect.setText("Conectar");
+        btnConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConectarActionPerformed(evt);
+                btnConnectActionPerformed(evt);
             }
         });
 
-        jlblNick.setText("Nome:");
+        jlblName.setText("Nome:");
 
-        btnSair.setText("Sair");
-        btnSair.addActionListener(new java.awt.event.ActionListener() {
+        btnLogout.setText("Sair");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSairActionPerformed(evt);
+                btnLogoutActionPerformed(evt);
             }
         });
 
-        org.jdesktop.layout.GroupLayout jpLigacaoLayout = new org.jdesktop.layout.GroupLayout(jpLigacao);
-        jpLigacao.setLayout(jpLigacaoLayout);
-        jpLigacaoLayout.setHorizontalGroup(
-            jpLigacaoLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jpLigacaoLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout jpConnectLayout = new org.jdesktop.layout.GroupLayout(jpConnect);
+        jpConnect.setLayout(jpConnectLayout);
+        jpConnectLayout.setHorizontalGroup(
+            jpConnectLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jpConnectLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jlblNick)
+                .add(jlblName)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(txtNomeUsuario, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 197, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(txtUserName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 197, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(jlblEndereco)
+                .add(jlblAdress)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtServerIp, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 171, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(jlblPorto)
+                .add(jlblPort)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(txtServerPorta, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 101, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(txtServerPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 101, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnConectar)
+                .add(btnConnect)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(btnSair, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 77, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(btnLogout, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 77, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        jpLigacaoLayout.setVerticalGroup(
-            jpLigacaoLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jpLigacaoLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                .add(btnConectar)
-                .add(txtServerPorta, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(jlblPorto)
+        jpConnectLayout.setVerticalGroup(
+            jpConnectLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jpConnectLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(btnConnect)
+                .add(txtServerPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jlblPort)
                 .add(txtServerIp, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(jlblEndereco)
-                .add(jlblNick)
-                .add(txtNomeUsuario, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(btnSair))
+                .add(jlblAdress)
+                .add(jlblName)
+                .add(txtUserName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(btnLogout))
         );
 
-        jpMensagens.setBorder(javax.swing.BorderFactory.createTitledBorder("Conversa"));
+        jpMessages.setBorder(javax.swing.BorderFactory.createTitledBorder("Conversa"));
 
-        txtAreaConversa.setColumns(20);
-        txtAreaConversa.setRows(5);
-        jscpScrollMensagens.setViewportView(txtAreaConversa);
+        txtMessageArea.setColumns(20);
+        txtMessageArea.setRows(5);
+        jscpScrollMensagens.setViewportView(txtMessageArea);
 
-        btnLimpar.setText("Limpar");
-        btnLimpar.addActionListener(new java.awt.event.ActionListener() {
+        btnCls.setText("Limpar");
+        btnCls.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLimparActionPerformed(evt);
+                btnClsActionPerformed(evt);
             }
         });
 
-        org.jdesktop.layout.GroupLayout jpMensagensLayout = new org.jdesktop.layout.GroupLayout(jpMensagens);
-        jpMensagens.setLayout(jpMensagensLayout);
-        jpMensagensLayout.setHorizontalGroup(
-            jpMensagensLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jpMensagensLayout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout jpMessagesLayout = new org.jdesktop.layout.GroupLayout(jpMessages);
+        jpMessages.setLayout(jpMessagesLayout);
+        jpMessagesLayout.setHorizontalGroup(
+            jpMessagesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jpMessagesLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jpMensagensLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(jpMessagesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jscpScrollMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jpMensagensLayout.createSequentialGroup()
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jpMessagesLayout.createSequentialGroup()
                         .add(0, 0, Short.MAX_VALUE)
-                        .add(btnLimpar)))
+                        .add(btnCls)))
                 .addContainerGap())
         );
-        jpMensagensLayout.setVerticalGroup(
-            jpMensagensLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jpMensagensLayout.createSequentialGroup()
-                .add(btnLimpar)
+        jpMessagesLayout.setVerticalGroup(
+            jpMessagesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jpMessagesLayout.createSequentialGroup()
+                .add(btnCls)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(jscpScrollMensagens, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 303, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -348,12 +348,12 @@ public class Client extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Online"));
 
-        jScrollPane1.setViewportView(listaOnline);
+        jScrollPane1.setViewportView(listOnline);
 
-        btnLimparSelecao.setText("Limpar Selecao");
-        btnLimparSelecao.addActionListener(new java.awt.event.ActionListener() {
+        btnClsSelection.setText("Limpar Selecao");
+        btnClsSelection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLimparSelecaoActionPerformed(evt);
+                btnClsSelectionActionPerformed(evt);
             }
         });
 
@@ -366,14 +366,14 @@ public class Client extends javax.swing.JFrame {
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .add(jPanel1Layout.createSequentialGroup()
-                        .add(btnLimparSelecao)
+                        .add(btnClsSelection)
                         .add(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .add(btnLimparSelecao)
+                .add(btnClsSelection)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jScrollPane1)
                 .addContainerGap())
@@ -381,9 +381,9 @@ public class Client extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Mensagens"));
 
-        txtAreaEnviar.addActionListener(new java.awt.event.ActionListener() {
+        txtSendArea.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtAreaEnviarActionPerformed(evt);
+                txtSendAreaActionPerformed(evt);
             }
         });
 
@@ -393,21 +393,21 @@ public class Client extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(txtAreaEnviar)
+                .add(txtSendArea)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(txtAreaEnviar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                .add(txtSendArea, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        btnEnviar.setText("Enviar");
-        btnEnviar.addActionListener(new java.awt.event.ActionListener() {
+        btnSend.setText("Enviar");
+        btnSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEnviarActionPerformed(evt);
+                btnSendActionPerformed(evt);
             }
         });
 
@@ -418,24 +418,24 @@ public class Client extends javax.swing.JFrame {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jpLigacao, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jpConnect, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                             .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(jpMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .add(jpMessages, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(btnEnviar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .add(btnSend, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(jpLigacao, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jpConnect, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(jpMensagens, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jpMessages, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
@@ -443,19 +443,19 @@ public class Client extends javax.swing.JFrame {
                         .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(layout.createSequentialGroup()
                         .add(27, 27, 27)
-                        .add(btnEnviar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 43, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                        .add(btnSend, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 43, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtAreaEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAreaEnviarActionPerformed
-        btnEnviar.doClick();
-    }//GEN-LAST:event_txtAreaEnviarActionPerformed
+    private void txtSendAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSendAreaActionPerformed
+        btnSend.doClick();
+    }//GEN-LAST:event_txtSendAreaActionPerformed
 
-    private void btnConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConectarActionPerformed
-        if (txtNomeUsuario.getText().trim().isEmpty()) {
+    private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
+        if (txtUserName.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nome de usuario não pode ser vazio.", "Nome de usuario vazio...", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -464,12 +464,12 @@ public class Client extends javax.swing.JFrame {
             txtServerIp.setText("127.0.0.1");
         }
         
-        if (txtServerPorta.getText().trim().isEmpty()) {
-            txtServerPorta.setText("6666");
+        if (txtServerPort.getText().trim().isEmpty()) {
+            txtServerPort.setText("6666");
         }
         
-        ligar();
-    }//GEN-LAST:event_btnConectarActionPerformed
+        connect();
+    }//GEN-LAST:event_btnConnectActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         if (client != null) {
@@ -481,58 +481,58 @@ public class Client extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
-    private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        if((txtAreaEnviar.getText().trim() != null) && (!txtAreaEnviar.getText().trim().isEmpty())){        
-            String texto_mensagem = txtAreaEnviar.getText().trim();        
+    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
+        if((txtSendArea.getText().trim() != null) && (!txtSendArea.getText().trim().isEmpty())){        
+            String texto_mensagem = txtSendArea.getText().trim();        
             String destino = null;
-            int[] destinos = this.listaOnline.getSelectedIndices();        
+            int[] destinos = this.listOnline.getSelectedIndices();        
         
             //Mensagem para varios destinatarios
             if(destinos.length > 1){    
                 String mensagem = "mensagem:";
                 for (int index: destinos){
-                    destino = (String) this.listaOnline.getModel().getElementAt(index);
+                    destino = (String) this.listOnline.getModel().getElementAt(index);
                     if(!(destino.equals(clientName))){
                         mensagem += destino + ";";
                     }else{
-                        txtAreaConversa.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
-                        txtAreaConversa.append("\n");
+                        txtMessageArea.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
+                        txtMessageArea.append("\n");
                     }                   
                 }
                 mensagem += ": " + texto_mensagem;
                 writer.println(mensagem);    
                 String[] result = mensagem.split(":");
-                txtAreaConversa.append("Para: " + result[1].substring(0, (result[1].length())-1) + ": " + result[2] + "\n");
-                txtAreaConversa.append("\n");
+                txtMessageArea.append("Para: " + result[1].substring(0, (result[1].length())-1) + ": " + result[2] + "\n");
+                txtMessageArea.append("\n");
 
             //Mensagem para um destinatario apenas
-            }else if (this.listaOnline.getSelectedIndex() > -1) {
-                destino = (String) this.listaOnline.getSelectedValue();
+            }else if (this.listOnline.getSelectedIndex() > -1) {
+                destino = (String) this.listOnline.getSelectedValue();
                 if(!(destino.equals(clientName))){
                     writer.println("mensagem:" + destino + ":" + texto_mensagem);
-                    txtAreaConversa.append("Para: " + destino + ": " + texto_mensagem + "\n");
-                    txtAreaConversa.append("\n");
+                    txtMessageArea.append("Para: " + destino + ": " + texto_mensagem + "\n");
+                    txtMessageArea.append("\n");
                 }else{
-                    txtAreaConversa.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
-                    txtAreaConversa.append("\n");
+                    txtMessageArea.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
+                    txtMessageArea.append("\n");
                 }
 
             //Mensagem para todos
             }else{
                 writer.println("mensagem:" + "*: " + texto_mensagem);
-                txtAreaConversa.append("Para:*: " + texto_mensagem + "\n");
-                txtAreaConversa.append("\n");
+                txtMessageArea.append("Para:*: " + texto_mensagem + "\n");
+                txtMessageArea.append("\n");
             }
-            txtAreaEnviar.setText("");        
+            txtSendArea.setText("");        
         }        
-    }//GEN-LAST:event_btnEnviarActionPerformed
+    }//GEN-LAST:event_btnSendActionPerformed
 
-    private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
-        txtAreaConversa.setText("");   
-        listaOnline.clearSelection();
-    }//GEN-LAST:event_btnLimparActionPerformed
+    private void btnClsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClsActionPerformed
+        txtMessageArea.setText("");   
+        listOnline.clearSelection();
+    }//GEN-LAST:event_btnClsActionPerformed
 
-    private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         writer.println("sair");
         try {
             client.close();
@@ -540,11 +540,11 @@ public class Client extends javax.swing.JFrame {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
         dispose();
-    }//GEN-LAST:event_btnSairActionPerformed
+    }//GEN-LAST:event_btnLogoutActionPerformed
 
-    private void btnLimparSelecaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparSelecaoActionPerformed
-        listaOnline.clearSelection();
-    }//GEN-LAST:event_btnLimparSelecaoActionPerformed
+    private void btnClsSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClsSelectionActionPerformed
+        listOnline.clearSelection();
+    }//GEN-LAST:event_btnClsSelectionActionPerformed
 
     
     /**
@@ -563,32 +563,31 @@ public class Client extends javax.swing.JFrame {
                 
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
-            public void run() {
-                
+            public void run() {                
                 new Client().setVisible(true);
             }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnConectar;
-    private javax.swing.JButton btnEnviar;
-    private javax.swing.JButton btnLimpar;
-    private javax.swing.JButton btnLimparSelecao;
-    private javax.swing.JButton btnSair;
+    private javax.swing.JButton btnCls;
+    private javax.swing.JButton btnClsSelection;
+    private javax.swing.JButton btnConnect;
+    private javax.swing.JButton btnLogout;
+    private javax.swing.JButton btnSend;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel jlblEndereco;
-    private javax.swing.JLabel jlblNick;
-    private javax.swing.JLabel jlblPorto;
-    private javax.swing.JPanel jpLigacao;
-    private javax.swing.JPanel jpMensagens;
+    private javax.swing.JLabel jlblAdress;
+    private javax.swing.JLabel jlblName;
+    private javax.swing.JLabel jlblPort;
+    private javax.swing.JPanel jpConnect;
+    private javax.swing.JPanel jpMessages;
     private javax.swing.JScrollPane jscpScrollMensagens;
-    private javax.swing.JList<String> listaOnline;
-    private javax.swing.JTextArea txtAreaConversa;
-    private javax.swing.JTextField txtAreaEnviar;
-    private javax.swing.JTextField txtNomeUsuario;
+    private javax.swing.JList<String> listOnline;
+    private javax.swing.JTextArea txtMessageArea;
+    private javax.swing.JTextField txtSendArea;
     private javax.swing.JTextField txtServerIp;
-    private javax.swing.JFormattedTextField txtServerPorta;
+    private javax.swing.JFormattedTextField txtServerPort;
+    private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 }

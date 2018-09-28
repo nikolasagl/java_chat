@@ -33,16 +33,16 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jpLigacao" max="32767" attributes="0"/>
+                  <Component id="jpConnect" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                           <Component id="jPanel2" max="32767" attributes="0"/>
-                          <Component id="jpMensagens" max="32767" attributes="0"/>
+                          <Component id="jpMessages" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jPanel1" max="32767" attributes="0"/>
-                          <Component id="btnEnviar" max="32767" attributes="0"/>
+                          <Component id="btnSend" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -53,10 +53,10 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="jpLigacao" min="-2" max="-2" attributes="0"/>
+              <Component id="jpConnect" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="jpMensagens" max="32767" attributes="0"/>
+                  <Component id="jpMessages" max="32767" attributes="0"/>
                   <Component id="jPanel1" max="32767" attributes="0"/>
               </Group>
               <Group type="103" groupAlignment="0" attributes="0">
@@ -66,7 +66,7 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
-                      <Component id="btnEnviar" min="-2" pref="43" max="-2" attributes="0"/>
+                      <Component id="btnSend" min="-2" pref="43" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -75,7 +75,7 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JPanel" name="jpLigacao">
+    <Container class="javax.swing.JPanel" name="jpConnect">
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -89,21 +89,21 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jlblNick" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlblName" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="txtNomeUsuario" min="-2" pref="197" max="-2" attributes="0"/>
+                  <Component id="txtUserName" min="-2" pref="197" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jlblEndereco" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlblAdress" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="txtServerIp" min="-2" pref="171" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jlblPorto" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlblPort" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="txtServerPorta" min="-2" pref="101" max="-2" attributes="0"/>
+                  <Component id="txtServerPort" min="-2" pref="101" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="btnConectar" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnConnect" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
-                  <Component id="btnSair" min="-2" pref="77" max="-2" attributes="0"/>
+                  <Component id="btnLogout" min="-2" pref="77" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -111,64 +111,64 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnConectar" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtServerPorta" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jlblPorto" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnConnect" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtServerPort" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlblPort" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtServerIp" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jlblEndereco" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jlblNick" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtNomeUsuario" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnSair" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlblAdress" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jlblName" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtUserName" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnLogout" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="jlblEndereco">
+        <Component class="javax.swing.JLabel" name="jlblAdress">
           <Properties>
             <Property name="text" type="java.lang.String" value="IP:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtServerIp">
         </Component>
-        <Component class="javax.swing.JLabel" name="jlblPorto">
+        <Component class="javax.swing.JLabel" name="jlblPort">
           <Properties>
             <Property name="text" type="java.lang.String" value="Porta:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JFormattedTextField" name="txtServerPorta">
+        <Component class="javax.swing.JFormattedTextField" name="txtServerPort">
           <Properties>
             <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
               <Format format="#0" subtype="-1" type="0"/>
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="btnConectar">
+        <Component class="javax.swing.JButton" name="btnConnect">
           <Properties>
             <Property name="text" type="java.lang.String" value="Conectar"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConectarActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConnectActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JLabel" name="jlblNick">
+        <Component class="javax.swing.JLabel" name="jlblName">
           <Properties>
             <Property name="text" type="java.lang.String" value="Nome:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtNomeUsuario">
+        <Component class="javax.swing.JTextField" name="txtUserName">
         </Component>
-        <Component class="javax.swing.JButton" name="btnSair">
+        <Component class="javax.swing.JButton" name="btnLogout">
           <Properties>
             <Property name="text" type="java.lang.String" value="Sair"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSairActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLogoutActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JPanel" name="jpMensagens">
+    <Container class="javax.swing.JPanel" name="jpMessages">
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -186,7 +186,7 @@
                       <Component id="jscpScrollMensagens" alignment="0" pref="483" max="32767" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                          <Component id="btnLimpar" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnCls" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -196,7 +196,7 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
-                  <Component id="btnLimpar" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnCls" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="jscpScrollMensagens" min="-2" pref="303" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -212,7 +212,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JTextArea" name="txtAreaConversa">
+            <Component class="javax.swing.JTextArea" name="txtMessageArea">
               <Properties>
                 <Property name="columns" type="int" value="20"/>
                 <Property name="rows" type="int" value="5"/>
@@ -220,12 +220,12 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JButton" name="btnLimpar">
+        <Component class="javax.swing.JButton" name="btnCls">
           <Properties>
             <Property name="text" type="java.lang.String" value="Limpar"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLimparActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnClsActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
@@ -247,7 +247,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="btnLimparSelecao" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnClsSelection" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -258,7 +258,7 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
-                  <Component id="btnLimparSelecao" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnClsSelection" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jScrollPane1" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -274,7 +274,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JList" name="listaOnline">
+            <Component class="javax.swing.JList" name="listOnline">
               <Properties>
                 <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
                   <StringArray count="0"/>
@@ -286,12 +286,12 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JButton" name="btnLimparSelecao">
+        <Component class="javax.swing.JButton" name="btnClsSelection">
           <Properties>
             <Property name="text" type="java.lang.String" value="Limpar Selecao"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLimparSelecaoActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnClsSelectionActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
@@ -310,7 +310,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="txtAreaEnviar" max="32767" attributes="0"/>
+                  <Component id="txtSendArea" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -319,26 +319,26 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="txtAreaEnviar" pref="33" max="32767" attributes="0"/>
+                  <Component id="txtSendArea" pref="33" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JTextField" name="txtAreaEnviar">
+        <Component class="javax.swing.JTextField" name="txtSendArea">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtAreaEnviarActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtSendAreaActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="btnEnviar">
+    <Component class="javax.swing.JButton" name="btnSend">
       <Properties>
         <Property name="text" type="java.lang.String" value="Enviar"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEnviarActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSendActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
