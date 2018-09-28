@@ -1,12 +1,13 @@
 package client;
 
-import de.javasoft.plaf.synthetica.SyntheticaBlueLightLookAndFeel;
+import de.javasoft.plaf.synthetica.SyntheticaSimple2DLookAndFeel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,10 +26,10 @@ import javax.swing.text.DefaultCaret;
 public class Client extends javax.swing.JFrame {
     
     private Socket client;
-    private Scanner leitor;
-    private PrintStream escritor;
+    private Scanner reader;
+    private PrintStream writer;
     private String clientName;
-    public static final ArrayList<String> lista = new ArrayList();
+    public static final ArrayList<String> list = new ArrayList();
     
     
     //Construtor inicia os componentes do JFrame
@@ -36,28 +37,74 @@ public class Client extends javax.swing.JFrame {
         initComponents();
         DefaultCaret caret = (DefaultCaret)txtAreaConversa.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        this.setTitle("Annoying Chat");
     }
     
-    public void playSound() throws UnsupportedAudioFileException, LineUnavailableException{
-        String soundName = "sound.wav";    
-        AudioInputStream audioInputStream;
+    public void tocarRisada(){
+        String sound_laugh = "Risada.wav";
+        AudioInputStream audioInputStream_4;
+        
         try {
-            audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            clip.start();
-        } catch (IOException ex) {
+            audioInputStream_4 = AudioSystem.getAudioInputStream(new File(sound_laugh).getAbsoluteFile());
+            Clip risada = AudioSystem.getClip();
+            
+            risada.open(audioInputStream_4);
+            risada.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
     
-    public void btnAtualizar(){
-        DefaultListModel listModel = new DefaultListModel();
-        for (int i = 0; i < lista.size(); i++)
-        {
-            listModel.addElement(lista.get(i));
+    public void tocarSom() throws UnsupportedAudioFileException, LineUnavailableException{
+        String sound_hey = "Hey.wav";
+        String sound_heyApple = "HeyApple.wav";
+        String sound_apple = "Apple.wav";
+        
+        AudioInputStream audioInputStream_1;
+        AudioInputStream audioInputStream_2;
+        AudioInputStream audioInputStream_3;        
+        
+        try {
+            Random rand = new Random();
+            int i = rand.nextInt(3);
+            
+            audioInputStream_1 = AudioSystem.getAudioInputStream(new File(sound_hey).getAbsoluteFile());
+            Clip hey = AudioSystem.getClip();
+
+            audioInputStream_2 = AudioSystem.getAudioInputStream(new File(sound_heyApple).getAbsoluteFile());
+            Clip heyApple = AudioSystem.getClip();
+
+            audioInputStream_3 = AudioSystem.getAudioInputStream(new File(sound_apple).getAbsoluteFile());
+            Clip apple = AudioSystem.getClip();            
+          
+            switch(i){
+              case 0:
+                hey.open(audioInputStream_1);
+                hey.start();
+                break;
+
+              case 1:
+                heyApple.open(audioInputStream_2);
+                heyApple.start();
+                break;
+
+              case 2:
+                apple.open(audioInputStream_3);
+                apple.start();
+                break;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
-        listaOnline.setModel(listModel);   
+    }
+    
+    public void btnAtualizar(){
+        DefaultListModel listaModel = new DefaultListModel();
+        for (int i = 0; i < list.size(); i++)
+        {
+            listaModel.addElement(list.get(i));
+        }
+        listaOnline.setModel(listaModel);   
     }
 
     //Funcao chamada com o click do botao conectar
@@ -70,13 +117,13 @@ public class Client extends javax.swing.JFrame {
             txtAreaConversa.append("Conectando...\n");
             
             String host = txtServerIp.getText().trim();            
-            int port = Integer.parseInt(txtServerPorta.getText().trim());
-            client = new Socket(host, port);
+            int porta = Integer.parseInt(txtServerPorta.getText().trim());
+            client = new Socket(host, porta);
 
-            leitor = new Scanner(client.getInputStream());
-            escritor = new PrintStream(client.getOutputStream());
+            reader = new Scanner(client.getInputStream());
+            writer = new PrintStream(client.getOutputStream());
             
-            escritor.println("login:" + aux_nome);
+            writer.println("login:" + aux_nome);
             
             //Thread que ouve as respostas do servidor que chegam atraves do clientManager //LISTENER
             //Trata a mensagem recebida e, de acordo com o que foi enviado pelo clientManager define quais acoes realizar
@@ -84,8 +131,8 @@ public class Client extends javax.swing.JFrame {
                 @Override
                 public void run() {
                     try {
-                        while (leitor.hasNextLine()) {
-                            String msg = leitor.nextLine();
+                        while (reader.hasNextLine()) {
+                            String msg = reader.nextLine();
                             String[] result = msg.split(":");
                             System.err.println("Mensagem recebida do servidor: " + msg);
                             
@@ -97,7 +144,7 @@ public class Client extends javax.swing.JFrame {
                                     txtAreaConversa.append("De: " + result[1] + " | Para:*:" + result[3] + "\n");
                                     txtAreaConversa.append("\n");
                                     try {
-                                        playSound();
+                                        tocarSom();
                                     } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
                                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                                     }
@@ -107,7 +154,7 @@ public class Client extends javax.swing.JFrame {
                                     txtAreaConversa.append("De: " + aux[0] + " | Para: " + aux2 + ": " + aux[2] + "\n");   
                                     txtAreaConversa.append("\n");
                                     try {
-                                        playSound();
+                                        tocarSom();
                                     } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
                                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                                     }
@@ -124,7 +171,7 @@ public class Client extends javax.swing.JFrame {
                                 } 
                                 //Atualiza a lista de clientes
                                 btnAtualizar();
-                                lista.clear();
+                                list.clear();
                                 
                             }else if(msg.toLowerCase().equals("login:false")){
                                System.err.println("Nome de usuario ja existe... " + msg);                               
@@ -133,8 +180,9 @@ public class Client extends javax.swing.JFrame {
                                client.close();
                                
                             }else if(msg.toLowerCase().equals("login:true")){
+                               tocarRisada();
                                clientName = aux_nome;
-                               txtAreaConversa.append("Usuario conectado...\n");
+                               txtAreaConversa.append("Usuario conectado...\n");                               
                                txtAreaConversa.append("\n");
                                System.err.println("Usuario conectado...");
                                txtNomeUsuario.setEditable(false);
@@ -154,7 +202,7 @@ public class Client extends javax.swing.JFrame {
                 private void addLista(String nome) {
                     if(nome != null){
                         ListModel model = (ListModel) listaOnline.getModel();
-                        lista.add(nome);
+                        list.add(nome);
                     }
                 }                
             }.start(); //Starta a Thread    
@@ -452,7 +500,7 @@ public class Client extends javax.swing.JFrame {
                     }                   
                 }
                 mensagem += ": " + texto_mensagem;
-                escritor.println(mensagem);    
+                writer.println(mensagem);    
                 String[] result = mensagem.split(":");
                 txtAreaConversa.append("Para: " + result[1].substring(0, (result[1].length())-1) + ": " + result[2] + "\n");
                 txtAreaConversa.append("\n");
@@ -461,7 +509,7 @@ public class Client extends javax.swing.JFrame {
             }else if (this.listaOnline.getSelectedIndex() > -1) {
                 destino = (String) this.listaOnline.getSelectedValue();
                 if(!(destino.equals(clientName))){
-                    escritor.println("mensagem:" + destino + ":" + texto_mensagem);
+                    writer.println("mensagem:" + destino + ":" + texto_mensagem);
                     txtAreaConversa.append("Para: " + destino + ": " + texto_mensagem + "\n");
                     txtAreaConversa.append("\n");
                 }else{
@@ -471,7 +519,7 @@ public class Client extends javax.swing.JFrame {
 
             //Mensagem para todos
             }else{
-                escritor.println("mensagem:" + "*: " + texto_mensagem);
+                writer.println("mensagem:" + "*: " + texto_mensagem);
                 txtAreaConversa.append("Para:*: " + texto_mensagem + "\n");
                 txtAreaConversa.append("\n");
             }
@@ -485,7 +533,7 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimparActionPerformed
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        escritor.println("sair");
+        writer.println("sair");
         try {
             client.close();
         } catch (IOException ex) {
@@ -506,7 +554,7 @@ public class Client extends javax.swing.JFrame {
     public static void main(String args[]) throws ParseException {   
         
         UIManager.put("Synthetica.window.decoration", Boolean.TRUE);
-        SyntheticaBlueLightLookAndFeel BlueLight = new SyntheticaBlueLightLookAndFeel();           
+        SyntheticaSimple2DLookAndFeel BlueLight = new SyntheticaSimple2DLookAndFeel();           
        
         try{
             UIManager.setLookAndFeel(BlueLight);
