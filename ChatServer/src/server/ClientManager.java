@@ -16,6 +16,7 @@ public class ClientManager extends Thread {
     //Contrutor recebe o socket q ele vai administrar
     //Recebe o servidor com quem vai se comunicar
     public ClientManager(Socket socket, Server servidor) throws IOException {
+
         this.socket = socket;
         this.server = servidor;
         this.writer = new PrintStream(socket.getOutputStream());
@@ -28,9 +29,13 @@ public class ClientManager extends Thread {
     //Trata a mensagem e, de acordo com o que foi enviado pela view define qual funcao chamar no servidor
     @Override
     public void run() {
+
         try {
+
             Scanner reader = new Scanner(socket.getInputStream());
+
             while (reader.hasNextLine()) {
+
                 String message = reader.nextLine();
                 String[] result = message.split(":");
 
@@ -40,35 +45,41 @@ public class ClientManager extends Thread {
 
                 System.err.println("Mensagem recebida pelo servidor: " + message);
                 
-                if(message.equals("sair")){
+                if (message.equals("sair")) {
+
                     System.err.println("Entrei no Sair");
                     server.removeClient(this); 
                     
-                }else if(method.equals("login")){
+                } else if (method.equals("login")) {
+
                     System.err.println("Entrei no login");                    
                                        
                     String resp = server.tryLogin(receiver.toLowerCase());
-                    if(resp.equals("login:true")){
+
+                    if (resp.equals("login:true")) {
+
                         this.clientName = receiver;
                         server.listUsers();
                         writer.println("login:true");
                         
-                    }else{
+                    } else {
                         writer.println("login:false");
                     }
                     
-                }else if(receiver.equals("*")){
+                } else if (receiver.equals("*")) {
+
                     System.err.println("Entrei no Replicar Mensagem");
                     server.replicateMessage(message, clientName);
 
-                }else if((method.equals("mensagem")) && !(receiver.equals("*")) && (msg!=null) && (msg!="")){
+                } else if ((method.equals("mensagem")) && !(receiver.equals("*")) && (msg!=null) && (msg!="")) {
+
                     String[] test = message.split(":");
                     String[] destinos = test[1].split(";");
                     System.err.println("Entrei no Mensagem com Destinatario: " + destinos.length);
                     server.messageReceiver(message, destinos, clientName);
                     
-                }else{
-                    System.err.println("Nao entrei em porra nenhuma");                                       
+                } else {
+                    System.err.println("Sou uma mensagem que nao respeita protocolos");                                       
                 }
             }
         } catch (EOFException ex) {

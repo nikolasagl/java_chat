@@ -34,13 +34,15 @@ public class Client extends javax.swing.JFrame {
     
     //Construtor inicia os componentes do JFrame
     public Client() {
+
         initComponents();
         DefaultCaret caret = (DefaultCaret)txtMessageArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         this.setTitle("Annoying Chat");
     }
     
-    public void playLaugh(){
+    public void playLaugh() {
+
         String sound_laugh = "Risada.wav";
         AudioInputStream audioInputStream_4;
         
@@ -50,12 +52,14 @@ public class Client extends javax.swing.JFrame {
             
             laugh.open(audioInputStream_4);
             laugh.start();
+            
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
     
-    public void playSound() throws UnsupportedAudioFileException, LineUnavailableException{
+    public void playSound() throws UnsupportedAudioFileException, LineUnavailableException {
+
         String sound_hey = "Hey.wav";
         String sound_heyApple = "HeyApple.wav";
         String sound_apple = "Apple.wav";
@@ -65,6 +69,7 @@ public class Client extends javax.swing.JFrame {
         AudioInputStream audioInputStream_3;        
         
         try {
+
             Random rand = new Random();
             int i = rand.nextInt(3);
             
@@ -77,7 +82,8 @@ public class Client extends javax.swing.JFrame {
             audioInputStream_3 = AudioSystem.getAudioInputStream(new File(sound_apple).getAbsoluteFile());
             Clip apple = AudioSystem.getClip();            
           
-            switch(i){
+            switch(i) {
+
               case 0:
                 hey.open(audioInputStream_1);
                 hey.start();
@@ -93,17 +99,20 @@ public class Client extends javax.swing.JFrame {
                 apple.start();
                 break;
             }
+
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public void btnRefresh(){
+    public void btnRefresh() {
+
         DefaultListModel listModel = new DefaultListModel();
-        for (int i = 0; i < list.size(); i++)
-        {
+
+        for (int i = 0; i < list.size(); i++) {
             listModel.addElement(list.get(i));
         }
+
         listOnline.setModel(listModel);   
     }
 
@@ -111,7 +120,9 @@ public class Client extends javax.swing.JFrame {
     //Cria a conexao do socket com o servidor
     //Define um nome ao socket "clientName" e loga no servidor com esse nome
     public void connect() {
+
         try {
+
             final String aux_name = txtUserName.getText().trim();
             
             txtMessageArea.append("Conectando...\n");
@@ -128,31 +139,40 @@ public class Client extends javax.swing.JFrame {
             //Thread que ouve as respostas do servidor que chegam atraves do clientManager //LISTENER
             //Trata a mensagem recebida e, de acordo com o que foi enviado pelo clientManager define quais acoes realizar
             new Thread(){
+
                 @Override
                 public void run() {
+                    
                     try {
+
                         while (reader.hasNextLine()) {
+
                             String msg = reader.nextLine();
                             String[] result = msg.split(":");
                             System.err.println("Mensagem recebida do servidor: " + msg);
                             
-                            if(msg.toLowerCase().startsWith("transmitir:")){
+                            if(msg.toLowerCase().startsWith("transmitir:")) {
+
                                 String mensagem = msg.substring(11, msg.length());   
-                                if (result[2].equals("*")){ // result[1] para implementacao antiga
-//                                    String aux = msg.substring(13, msg.length());
-//                                    txtAreaConversa.append("Todos:" + aux + "\n"); Implementacao antiga
+
+                                if (result[2].equals("*")) {
+
                                     txtMessageArea.append("De: " + result[1] + " | Para:*:" + result[3] + "\n");
                                     txtMessageArea.append("\n");
+                                    
                                     try {
                                         playSound();
                                     } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
                                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                                     }
-                                }else{
+
+                                } else {
+
                                     String[] aux = mensagem.split(":");
                                     String aux2 = aux[1].substring(0, (aux[1].length())-1);
                                     txtMessageArea.append("De: " + aux[0] + " | Para: " + aux2 + ": " + aux[2] + "\n");   
                                     txtMessageArea.append("\n");
+
                                     try {
                                         playSound();
                                     } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
@@ -160,27 +180,32 @@ public class Client extends javax.swing.JFrame {
                                     }
                                 }   
                                 
-                            }else if(msg.toLowerCase().startsWith("lista_usuarios:")){
-                                String[] aux = msg.split(":");
-                                
+                            } else if(msg.toLowerCase().startsWith("lista_usuarios:")) {
+
+                                String[] aux = msg.split(":");                                
                                 String[] names = aux[1].split(";");
+                                
                                 for(String name: names){
                                     if(name != null){
                                         addList(name);                                             
                                     }
                                 } 
+
                                 //Atualiza a lista de clientes
                                 btnRefresh();
                                 list.clear();
                                 
-                            }else if(msg.toLowerCase().equals("login:false")){
+                            } else if(msg.toLowerCase().equals("login:false")) {
+
                                System.err.println("Nome de usuario ja existe... " + msg);                               
                                txtMessageArea.append("Nome de usuario ja existe... Escolha outro!" + "\n"); 
                                txtMessageArea.append("\n");
                                client.close();
                                
-                            }else if(msg.toLowerCase().equals("login:true")){
+                            } else if(msg.toLowerCase().equals("login:true")) {
+
                                playLaugh();
+
                                clientName = aux_name;
                                txtMessageArea.append("Usuario conectado...\n");                               
                                txtMessageArea.append("\n");
@@ -190,7 +215,7 @@ public class Client extends javax.swing.JFrame {
                                txtServerPort.setEditable(false);
                                btnConnect.setEnabled(false);
                                
-                            }else{
+                            } else {
                                System.err.println("Mensagem Invalida do Servidor");
                             }                            
                         }
@@ -200,7 +225,8 @@ public class Client extends javax.swing.JFrame {
                 }
 
                 private void addList(String name) {
-                    if(name != null){
+
+                    if(name != null) {
                         ListModel model = (ListModel) listOnline.getModel();
                         list.add(name);
                     }
@@ -245,6 +271,7 @@ public class Client extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
         setResizable(false);
+        
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -455,6 +482,7 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_txtSendAreaActionPerformed
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
+
         if (txtUserName.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nome de usuario não pode ser vazio.", "Nome de usuario vazio...", JOptionPane.ERROR_MESSAGE);
             return;
@@ -472,6 +500,7 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btnConnectActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+
         if (client != null) {
             try {
                 client.close(); 
@@ -482,23 +511,30 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        if((txtSendArea.getText().trim() != null) && (!txtSendArea.getText().trim().isEmpty())){        
+        
+        if((txtSendArea.getText().trim() != null) && (!txtSendArea.getText().trim().isEmpty())) {        
+
             String texto_mensagem = txtSendArea.getText().trim();        
             String destino = null;
             int[] destinos = this.listOnline.getSelectedIndices();        
         
             //Mensagem para varios destinatarios
-            if(destinos.length > 1){    
+            if (destinos.length > 1) {    
+
                 String mensagem = "mensagem:";
-                for (int index: destinos){
+
+                for (int index: destinos) {
+
                     destino = (String) this.listOnline.getModel().getElementAt(index);
-                    if(!(destino.equals(clientName))){
+
+                    if (!(destino.equals(clientName))) {
                         mensagem += destino + ";";
-                    }else{
+                    } else {
                         txtMessageArea.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
                         txtMessageArea.append("\n");
                     }                   
                 }
+
                 mensagem += ": " + texto_mensagem;
                 writer.println(mensagem);    
                 String[] result = mensagem.split(":");
@@ -506,19 +542,21 @@ public class Client extends javax.swing.JFrame {
                 txtMessageArea.append("\n");
 
             //Mensagem para um destinatario apenas
-            }else if (this.listOnline.getSelectedIndex() > -1) {
+            } else if (this.listOnline.getSelectedIndex() > -1) {
+
                 destino = (String) this.listOnline.getSelectedValue();
-                if(!(destino.equals(clientName))){
+
+                if (!(destino.equals(clientName))) {
                     writer.println("mensagem:" + destino + ":" + texto_mensagem);
                     txtMessageArea.append("Para: " + destino + ": " + texto_mensagem + "\n");
                     txtMessageArea.append("\n");
-                }else{
+                } else {
                     txtMessageArea.append("Voce nao pode enviar mensagens para voce mesmo!!\n");
                     txtMessageArea.append("\n");
                 }
 
             //Mensagem para todos
-            }else{
+            } else {
                 writer.println("mensagem:" + "*: " + texto_mensagem);
                 txtMessageArea.append("Para:*: " + texto_mensagem + "\n");
                 txtMessageArea.append("\n");
@@ -533,7 +571,9 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btnClsActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+
         writer.println("sair");
+
         try {
             client.close();
         } catch (IOException ex) {
@@ -556,7 +596,7 @@ public class Client extends javax.swing.JFrame {
         UIManager.put("Synthetica.window.decoration", Boolean.TRUE);
         SyntheticaSimple2DLookAndFeel BlueLight = new SyntheticaSimple2DLookAndFeel();           
        
-        try{
+        try {
             UIManager.setLookAndFeel(BlueLight);
         }
         catch (UnsupportedLookAndFeelException e){}
